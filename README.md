@@ -19,7 +19,9 @@ endpoints for dashboard application using express, node, & mysql2.
 The Github project is:
 https://github.com/jason-cornish/myco-tex-dashboard.
 
-**myco-tex-sensors** This project holds scripts to effectively recieve and send temps, humitity, co2 and other enviromental variables using python.
+**myco-tex-sensors** Scripts to effectively recieve and send temps, humitity, co2 and other enviromental variables using python.
+The Github project is:
+https://github.com/BenjaminDBallard/myco-tex-sensors.
 
 ## Project setup
 
