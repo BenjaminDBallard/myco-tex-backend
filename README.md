@@ -29,7 +29,16 @@ https://github.com/BenjaminDBallard/myco-tex-sensors.
 npm install
 ```
 
-### Compiles typescript & starts local server
+Create an empty local SQL database and a dotenv file with the following values:
+
+```
+HOST=localhost
+DBUSERNAME=your database username
+PASSWORD=your database password
+DATABASE=your database name
+```
+
+### Compiles typescript, Initializes DB, & Starts local server
 
 ```
 npm run start
