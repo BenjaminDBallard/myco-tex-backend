@@ -58,13 +58,13 @@ npm run lint
 
 ## Endpoints
 
-### User:
+User:
 
 ```
 http://localhost:3000/api/user
 ```
 
-Example user post body:
+<sub>Example user post body:</sub>
 
 ```
 {
@@ -72,13 +72,13 @@ Example user post body:
 }
 ```
 
-### Location:
+Location:
 
 ```
 http://localhost:3000/api/location/${user_id}
 ```
 
-Example location post body:
+<sub>Example location post body:</sub>
 
 ```
 {
@@ -87,13 +87,13 @@ Example location post body:
 }
 ```
 
-### Room:
+Room:
 
 ```
 http://localhost:3000/api/room/${location_id}
 ```
 
-Example room post body:
+<sub>Example room post body:</sub>
 
 ```
 {
@@ -102,13 +102,13 @@ Example room post body:
 }
 ```
 
-### Controller:
+Controller:
 
 ```
 http://localhost:3000/api/controller/${room_id}
 ```
 
-Example controller post body:
+<sub>Example controller post body:</sub>
 
 ```
 {
@@ -120,13 +120,13 @@ Example controller post body:
 }
 ```
 
-### Probe:
+Probe:
 
 ```
 http://localhost:3000/api/probe/${controller_id}
 ```
 
-Example probe post body:
+<sub>Example probe post body:</sub>
 
 ```
 {
@@ -137,13 +137,13 @@ Example probe post body:
 }
 ```
 
-### ProbeCo2:
+ProbeCo2:
 
 ```
 http://localhost:3000/api/probesCo2/${probe_id}
 ```
 
-Example probeCo2 post body:
+<sub>Example probeCo2 post body:</sub>
 
 ```
 {
@@ -152,13 +152,13 @@ Example probeCo2 post body:
 }
 ```
 
-### ProbeHum:
+ProbeHum:
 
 ```
 http://localhost:3000/api/probesHum/${probe_id}
 ```
 
-Example probeHum post body:
+<sub>Example probeHum post body:</sub>
 
 ```
 {
@@ -167,13 +167,13 @@ Example probeHum post body:
 }
 ```
 
-### ProbePpm:
+ProbePpm:
 
 ```
 http://localhost:3000/api/probesPpm/${probe_id}
 ```
 
-Example probePpm post body:
+<sub>Example probePpm post body:</sub>
 
 ```
 {
@@ -182,13 +182,13 @@ Example probePpm post body:
 }
 ```
 
-### ProbeTherm:
+ProbeTherm:
 
 ```
 http://localhost:3000/api/probesTherm/${probe_id}
 ```
 
-Example probeTherm post body:
+<sub>Example probeTherm post body:</sub>
 
 ```
 {
