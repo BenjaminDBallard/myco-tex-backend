@@ -12,60 +12,60 @@ Current work is focused on establishing a monitoring system and database for tem
 
 ## Related Projects/Modules
 
-**myco-tex-backend** This project. Serves up REST
+- **myco-tex-backend** This project. Serves up REST
 endpoints for dashboard application using express, node, & mysql2.
 
-**myco-tex-dashboard** This is the main dashboard application used for monitoring facility enviromental status using react & styled-components.
+- **myco-tex-dashboard** This is the main dashboard application used for monitoring facility enviromental status using react & styled-components.
 The Github project is:
 https://github.com/jason-cornish/myco-tex-dashboard.
 
-**myco-tex-sensors** Scripts to effectively recieve and send temps, humitity, co2 and other enviromental variables using python.
+- **myco-tex-sensors** Scripts to effectively recieve and send temps, humitity, co2 and other enviromental variables using python.
 The Github project is:
 https://github.com/BenjaminDBallard/myco-tex-sensors.
 
-## Project setup
+> [!TIP]
+>
+> ## Project setup
+>
+> ```
+> npm install
+> ```
+>
+> Create an empty local SQL database and a dotenv file with the following values:
+>
+> ```
+> HOST=localhost
+> DBUSERNAME=your database username
+> PASSWORD=your database password
+> DATABASE=your database name
+> ```
+> 
+> ### Compiles typescript, Initializes DB, & Starts local server
+>
+> ```
+> npm run start
+> ```
+> 
+> ### Run your tests
+> 
+> ```
+> npm run test
+> ```
+> 
+> ### Lints and fixes files
+> 
+> ```
+> npm run lint
+> ```
 
-```
-npm install
-```
-
-Create an empty local SQL database and a dotenv file with the following values:
-
-```
-HOST=localhost
-DBUSERNAME=your database username
-PASSWORD=your database password
-DATABASE=your database name
-```
-
-### Compiles typescript, Initializes DB, & Starts local server
-
-```
-npm run start
-```
-
-### Run your tests
-
-```
-npm run test
-```
-
-### Lints and fixes files
-
-```
-npm run lint
-```
-
-## Endpoints
+## Endpoints 
+>and example post body
 
 User:
 
 ```
 http://localhost:3000/api/user
 ```
-
-<sub>Example user post body:</sub>
-
 ```
 {
     "parcel": "userID001"
@@ -77,9 +77,6 @@ Location:
 ```
 http://localhost:3000/api/location/${user_id}
 ```
-
-<sub>Example location post body:</sub>
-
 ```
 {
     "user_id": "userID001",
@@ -92,9 +89,6 @@ Room:
 ```
 http://localhost:3000/api/room/${location_id}
 ```
-
-<sub>Example room post body:</sub>
-
 ```
 {
     "location_id": "1",
@@ -107,9 +101,6 @@ Controller:
 ```
 http://localhost:3000/api/controller/${room_id}
 ```
-
-<sub>Example controller post body:</sub>
-
 ```
 {
     "room_id": "1",
@@ -125,9 +116,6 @@ Probe:
 ```
 http://localhost:3000/api/probe/${controller_id}
 ```
-
-<sub>Example probe post body:</sub>
-
 ```
 {
     "controller_id": "1",
@@ -142,9 +130,6 @@ ProbeCo2:
 ```
 http://localhost:3000/api/probesCo2/${probe_id}
 ```
-
-<sub>Example probeCo2 post body:</sub>
-
 ```
 {
     "probe_id": "1",
@@ -157,9 +142,6 @@ ProbeHum:
 ```
 http://localhost:3000/api/probesHum/${probe_id}
 ```
-
-<sub>Example probeHum post body:</sub>
-
 ```
 {
     "probe_id": "1",
@@ -172,9 +154,6 @@ ProbePpm:
 ```
 http://localhost:3000/api/probesPpm/${probe_id}
 ```
-
-<sub>Example probePpm post body:</sub>
-
 ```
 {
     "probe_id": "1",
@@ -187,9 +166,6 @@ ProbeTherm:
 ```
 http://localhost:3000/api/probesTherm/${probe_id}
 ```
-
-<sub>Example probeTherm post body:</sub>
-
 ```
 {
     "probe_id": "1",
