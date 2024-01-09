@@ -61,7 +61,7 @@ npm run lint
 ### User:
 
 ```
-http://localhost:3000/api/users/user
+http://localhost:3000/api/user
 ```
 
 Example user post body:
@@ -75,7 +75,7 @@ Example user post body:
 ### Location:
 
 ```
-http://localhost:3000/api/locations/${user_id}/location
+http://localhost:3000/api/location/${user_id}
 ```
 
 Example location post body:
@@ -90,7 +90,7 @@ Example location post body:
 ### Room:
 
 ```
-http://localhost:3000/api/rooms/${location_id}/room
+http://localhost:3000/api/room/${location_id}
 ```
 
 Example room post body:
@@ -105,7 +105,7 @@ Example room post body:
 ### Controller:
 
 ```
-http://localhost:3000/api/controllers/${room_id}/controller
+http://localhost:3000/api/controller/${room_id}
 ```
 
 Example controller post body:
@@ -123,7 +123,7 @@ Example controller post body:
 ### Probe:
 
 ```
-http://localhost:3000/api/probes/${controller_id}/probe
+http://localhost:3000/api/probe/${controller_id}
 ```
 
 Example probe post body:
@@ -140,7 +140,7 @@ Example probe post body:
 ### ProbeCo2:
 
 ```
-http://localhost:3000/api/probesCo2/${probe_id}/probeCo2
+http://localhost:3000/api/probesCo2/${probe_id}
 ```
 
 Example probeCo2 post body:
@@ -155,7 +155,7 @@ Example probeCo2 post body:
 ### ProbeHum:
 
 ```
-http://localhost:3000/api/probesHum/${probe_id}/probeHum
+http://localhost:3000/api/probesHum/${probe_id}
 ```
 
 Example probeHum post body:
@@ -170,7 +170,7 @@ Example probeHum post body:
 ### ProbePpm:
 
 ```
-http://localhost:3000/api/probesPpm/${probe_id}/probePpm
+http://localhost:3000/api/probesPpm/${probe_id}
 ```
 
 Example probePpm post body:
@@ -185,7 +185,7 @@ Example probePpm post body:
 ### ProbeTherm:
 
 ```
-http://localhost:3000/api/probesTherm/${probe_id}/probeTherm
+http://localhost:3000/api/probesTherm/${probe_id}
 ```
 
 Example probeTherm post body:
