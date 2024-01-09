@@ -58,7 +58,7 @@ npm run lint
 
 ## Endpoints
 
-###User:
+### User:
 
 ```
 http://localhost:3000/api/uuid/post
@@ -72,7 +72,7 @@ Example user post body:
 }
 ```
 
-###Location:
+### Location:
 
 ```
 http://localhost:3000/api/locations/${user_id}/location
@@ -87,7 +87,7 @@ Example location post body:
 }
 ```
 
-###Room:
+### Room:
 
 ```
 http://localhost:3000/api/rooms/${location_id}/room
@@ -102,7 +102,7 @@ Example room post body:
 }
 ```
 
-###Controller:
+### Controller:
 
 ```
 http://localhost:3000/api/controllers/${room_id}/controller
@@ -120,7 +120,7 @@ Example controller post body:
 }
 ```
 
-###Probe:
+### Probe:
 
 ```
 http://localhost:3000/api/probes/${controller_id}/probe
@@ -137,7 +137,7 @@ Example probe post body:
 }
 ```
 
-###ProbeCo2:
+### ProbeCo2:
 
 ```
 http://localhost:3000/api/probesCo2/${probe_id}/probeCo2
@@ -152,7 +152,7 @@ Example probeCo2 post body:
 }
 ```
 
-###ProbeHum:
+### ProbeHum:
 
 ```
 http://localhost:3000/api/probesHum/${probe_id}/probeHum
@@ -167,7 +167,7 @@ Example probeHum post body:
 }
 ```
 
-###ProbePpm:
+### ProbePpm:
 
 ```
 http://localhost:3000/api/probesPpm/${probe_id}/probePpm
@@ -182,7 +182,7 @@ Example probePpm post body:
 }
 ```
 
-###ProbeTherm:
+### ProbeTherm:
 
 ```
 http://localhost:3000/api/probesTherm/${probe_id}/probeTherm
