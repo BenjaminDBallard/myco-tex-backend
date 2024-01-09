@@ -4,7 +4,7 @@ import { getUser } from "../controllers/user.js";
 
 const router = Router();
 
-router.post("/user", logUser);
-router.get("/user", getUser);
+router.post("/", logUser);
+router.get("/", getUser);
 
 export default router;

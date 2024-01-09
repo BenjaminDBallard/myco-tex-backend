@@ -3,7 +3,7 @@ import { getLocation, logLocation } from "../controllers/location.js";
 
 const router = Router();
 
-router.get("/:user_id/location", getLocation);
-router.post("/:user_id/location", logLocation);
+router.get("/:user_id", getLocation);
+router.post("/:user_id", logLocation);
 
 export default router;

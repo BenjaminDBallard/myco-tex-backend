@@ -16,11 +16,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/users", passUserRouter);
-app.use("/api/locations", locationRouter);
-app.use("/api/rooms", roomRouter);
-app.use("/api/controllers", controllerRouter);
-app.use("/api/probes", probeRouter);
+app.use("/api/user", passUserRouter);
+app.use("/api/location", locationRouter);
+app.use("/api/room", roomRouter);
+app.use("/api/controller", controllerRouter);
+app.use("/api/probe", probeRouter);
 app.use("/api/probesCo2", probeCo2Router);
 app.use("/api/probesHum", probeHumRouter);
 app.use("/api/probesPpm", probePpmRouter);

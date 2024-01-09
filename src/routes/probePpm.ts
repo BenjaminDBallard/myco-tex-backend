@@ -3,7 +3,7 @@ import { getProbePpm, logProbePpm } from "../controllers/probePpm.js";
 
 const router = Router();
 
-router.get("/:probe_id/probePpm", getProbePpm);
-router.post("/:probe_id/probePpm", logProbePpm);
+router.get("/:probe_id", getProbePpm);
+router.post("/:probe_id", logProbePpm);
 
 export default router;
