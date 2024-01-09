@@ -61,7 +61,7 @@ npm run lint
 ### User:
 
 ```
-http://localhost:3000/api/uuid/post
+http://localhost:3000/api/users/user
 ```
 
 Example user post body:
