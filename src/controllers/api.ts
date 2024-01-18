@@ -12,18 +12,19 @@ export const getReport = async (req: any, res: any) => {
   probe.probe_id,
   probe.probe_type
 FROM users
-JOIN location
+LEFT JOIN location
   ON users.user_id = location.user_id
-JOIN room
+LEFT JOIN room
   ON location.location_id = room.location_id
-JOIN controller
+LEFT JOIN controller
   ON room.room_id = controller.room_id
-JOIN probe
+LEFT JOIN probe
   ON controller.controller_id = probe.controller_id;`;
   try {
     const formattedSql = con.format(sql);
     const [rows] = await con.execute(formattedSql);
     let tabularData: any = rows;
+    console.log(tabularData);
     const treeDataArray: User[] = convertToTreeArray(tabularData);
 
     return res.status(200).json(treeDataArray, null, 2);
