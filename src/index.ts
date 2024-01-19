@@ -10,12 +10,17 @@ import probeCo2Router from "./routes/probeCo2.js";
 import probeHumRouter from "./routes/probeHum.js";
 import probePpmRouter from "./routes/probePpm.js";
 import probeThermRouter from "./routes/probeTherm.js";
+import apiRouter from "./routes/api.js";
 import { verifyJWT } from "./controllers/user.js";
+
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+
+
 
 app.get("/isUserAuth", verifyJWT, (req, res) => {
   res.send("You are authenticated Congrats:");
@@ -25,6 +30,7 @@ app.get("/isUserAuth", verifyJWT, (req, res) => {
 //   return res.send("successfully accessed secret toure");
 // });
 
+app.use("/api", apiRouter);
 app.use("/api/user", passUserRouter);
 app.use("/api/location", locationRouter);
 app.use("/api/room", roomRouter);
