@@ -1,3 +1,4 @@
+import uniqid from "uniqid";
 import pool from "../connection.js";
 const con = await pool.getConnection();
 
@@ -24,13 +25,15 @@ export const logRoom = async (req: any, res: any) => {
     const createRoomSql = `
             INSERT INTO room (
                 location_id,
+                room_id,
                 room_title
             )
-            VALUES (?, ?)
+            VALUES (?, ?, ?)
         `;
-
+    let newID = uniqid();
     const values = [
       req.params.location_id, // Required
+      newID,
       req.body.room_title?.substring(0, 100) || null,
     ];
 

@@ -24,16 +24,18 @@ export const logController = async (req: any, res: any) => {
     const createControllerSql = `
             INSERT INTO controller (
                 room_id,
+                controller_id,
                 controller_serial,
                 controller_make,
                 controller_model,
                 controller_ip
             )
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
 
     const values = [
       req.params.room_id, // Required
+      req.body.controller_id?.substring(0, 100),
       req.body.controller_serial?.substring(0, 100) || null,
       req.body.controller_make?.substring(0, 100) || null,
       req.body.controller_model?.substring(0, 100) || null,

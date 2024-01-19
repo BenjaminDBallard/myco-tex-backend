@@ -1,36 +1,80 @@
+import uniqid from "uniqid";
 import pool from "../connection.js";
 const con = await pool.getConnection();
 
+console.log("!!!!!! new ID !!!!!!!");
+console.log(uniqid());
+
 export const getMeasure = async (req: any, res: any) => {
-  const sql = `SELECT
-  controller.controller_id,
-  probe.probe_id,
-  probe.probe_type,
-  probe_co2.probe_co2_measure,
-  probe_hum.probe_hum_measure,
-  probe_ppm.probe_ppm_measure,
-  probe_therm.probe_therm_measure
-FROM room
-LEFT JOIN controller
-  ON room.room_id = controller.room_id
-LEFT JOIN probe
-  ON controller.controller_id = probe.controller_id
-LEFT JOIN probe_co2
-  ON probe.probe_id = probe_co2.probe_id
+  const sql = `SELECT controller.controller_id, probe.probe_id, probe.probe_type, probe_co2.probe_co2_measure AS measure, probe_co2.probe_c02_created_at AS created_at
+  FROM room 
+  LEFT JOIN controller
+    ON room.room_id = controller.room_id
+  LEFT JOIN probe
+    ON controller.controller_id = probe.controller_id
+  LEFT JOIN probe_co2
+    ON probe.probe_id = probe_co2.probe_id
   LEFT JOIN probe_hum
-  ON probe.probe_id = probe_hum.probe_id
+    ON probe.probe_id = probe_hum.probe_id
   LEFT JOIN probe_ppm
-  ON probe.probe_id = probe_ppm.probe_id
+    ON probe.probe_id = probe_ppm.probe_id
   LEFT JOIN probe_therm
-  ON probe.probe_id = probe_therm.probe_id
-WHERE room.room_id = ?;
+    ON probe.probe_id = probe_therm.probe_id
+  WHERE probe_co2_measure IS NOT NULL AND room.room_id = "d3j0b6a90lrk30zi3"
+UNION ALL
+SELECT controller.controller_id, probe.probe_id, probe.probe_type, probe_hum.probe_hum_measure AS measure, probe_hum.probe_hum_created_at AS created_at
+  FROM room 
+  LEFT JOIN controller
+    ON room.room_id = controller.room_id
+  LEFT JOIN probe
+    ON controller.controller_id = probe.controller_id
+  LEFT JOIN probe_co2
+    ON probe.probe_id = probe_co2.probe_id
+  LEFT JOIN probe_hum
+    ON probe.probe_id = probe_hum.probe_id
+  LEFT JOIN probe_ppm
+    ON probe.probe_id = probe_ppm.probe_id
+  LEFT JOIN probe_therm
+    ON probe.probe_id = probe_therm.probe_id
+  WHERE probe_hum_measure IS NOT NULL AND room.room_id = "d3j0b6a90lrk30zi3"
+UNION ALL
+SELECT controller.controller_id, probe.probe_id, probe.probe_type, probe_ppm.probe_ppm_measure AS measure, probe_ppm.probe_ppm_created_at AS created_at
+  FROM room 
+  LEFT JOIN controller
+    ON room.room_id = controller.room_id
+  LEFT JOIN probe
+    ON controller.controller_id = probe.controller_id
+  LEFT JOIN probe_co2
+    ON probe.probe_id = probe_co2.probe_id
+  LEFT JOIN probe_hum
+    ON probe.probe_id = probe_hum.probe_id
+  LEFT JOIN probe_ppm
+    ON probe.probe_id = probe_ppm.probe_id
+  LEFT JOIN probe_therm
+    ON probe.probe_id = probe_therm.probe_id
+    WHERE probe_ppm_measure IS NOT NULL AND room.room_id = "d3j0b6a90lrk30zi3"
+UNION ALL
+SELECT controller.controller_id, probe.probe_id, probe.probe_type, probe_therm.probe_therm_measure AS measure, probe_therm.probe_therm_created_at AS created_at
+  FROM room 
+  LEFT JOIN controller
+    ON room.room_id = controller.room_id
+  LEFT JOIN probe
+    ON controller.controller_id = probe.controller_id
+  LEFT JOIN probe_co2
+    ON probe.probe_id = probe_co2.probe_id
+  LEFT JOIN probe_hum
+    ON probe.probe_id = probe_hum.probe_id
+  LEFT JOIN probe_ppm
+    ON probe.probe_id = probe_ppm.probe_id
+  LEFT JOIN probe_therm
+    ON probe.probe_id = probe_therm.probe_id
+  WHERE probe_therm_measure IS NOT NULL AND room.room_id = "d3j0b6a90lrk30zi3";
 `;
   try {
     const room_id = req.params.room_id;
     const formattedSql = con.format(sql, room_id);
     const [rows] = await con.execute(formattedSql);
     let tabularData: any = rows;
-    console.log(tabularData);
     const treeDataArray: User[] = convertToTreeArray(tabularData);
 
     return res.status(200).json(treeDataArray, null, 2);
@@ -67,7 +111,6 @@ WHERE users.user_id = ?;`;
     const formattedSql = con.format(sql, user_id);
     const [rows] = await con.execute(formattedSql);
     let tabularData: any = rows;
-    console.log(tabularData);
     const treeDataArray: User[] = convertToTreeArray(tabularData);
 
     return res.status(200).json(treeDataArray, null, 2);
@@ -79,9 +122,14 @@ WHERE users.user_id = ?;`;
   }
 };
 
+interface Measurement {
+  measure: string;
+  created_at: string;
+}
 interface Probe {
   probe_id: string;
   probe_type: string;
+  measurements: Measurement[];
 }
 
 interface Controller {
@@ -119,6 +167,8 @@ function convertToTreeArray(data: any[]): User[] {
       controller_id,
       probe_id,
       probe_type,
+      measure,
+      created_at,
     } = item;
 
     let userNode = tree.find((node) => node.user_id === user_id);
@@ -172,10 +222,25 @@ function convertToTreeArray(data: any[]): User[] {
         roomNode.controllers.push(controllerNode);
       }
     }
-    if (probe_id !== null) {
-      controllerNode.probes.push({
+
+    let probeNode = controllerNode.probes.find(
+      (node) => node.probe_id === probe_id
+    );
+
+    if (!probeNode) {
+      probeNode = {
         probe_id,
         probe_type,
+        measurements: [],
+      };
+      if (probe_id !== null) {
+        controllerNode.probes.push(probeNode);
+      }
+    }
+    if (measure !== null) {
+      probeNode.measurements.push({
+        measure,
+        created_at,
       });
     }
   });

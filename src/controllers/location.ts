@@ -1,3 +1,4 @@
+import uniqid from "uniqid";
 import pool from "../connection.js";
 const con = await pool.getConnection();
 
@@ -18,20 +19,23 @@ export const getLocation = async (req: any, res: any) => {
 };
 
 export const logLocation = async (req: any, res: any) => {
-  console.log(req.body);
-
+  console.log(req.body.location_title);
+  console.log(uniqid());
   try {
     const createLocationSql = `
             INSERT INTO location (
                 user_id,
+                location_id,
                 location_title
             )
-            VALUES (?, ?)
+            VALUES (?, ?, ?)
         `;
-
+    const userID = req.body.location_title;
+    let newID = uniqid();
     const values = [
       req.params.user_id, // Required
-      req.body.location_title?.substring(0, 100) || null,
+      newID,
+      userID,
     ];
 
     const formattedSql = con.format(createLocationSql, values);

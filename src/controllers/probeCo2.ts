@@ -1,3 +1,4 @@
+import uniqid from "uniqid";
 import pool from "../connection.js";
 const con = await pool.getConnection();
 
@@ -24,13 +25,17 @@ export const logProbeCo2 = async (req: any, res: any) => {
     const createProbeCo2Sql = `
             INSERT INTO probe_co2 (
                 probe_id,
+                probe_co2_id,
                 probe_co2_measure
             )
-            VALUES (?, ?)
+            VALUES (?, ?, ?)
         `;
+
+    let newID = uniqid();
 
     const values = [
       req.params.probe_id, // Required
+      newID,
       req.body.probe_co2_measure?.substring(0, 7) || null,
     ];
 

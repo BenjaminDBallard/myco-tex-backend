@@ -24,15 +24,17 @@ export const logProbe = async (req: any, res: any) => {
     const createProbeSql = `
             INSERT INTO probe (
                 controller_id,
+                probe_id,
                 probe_make,
                 probe_model,
                 probe_type
             )
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?)
         `;
 
     const values = [
       req.params.controller_id, // Required
+      req.body.probe_id?.substring(0, 100),
       req.body.probe_make?.substring(0, 50) || null,
       req.body.probe_model?.substring(0, 50) || null,
       req.body.probe_type?.substring(0, 50) || null,
