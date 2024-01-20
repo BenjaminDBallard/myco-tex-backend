@@ -90,6 +90,9 @@ SELECT room.room_id, room.room_title, room.room_created_at, controller.controlle
 export const getReport = async (req: any, res: any) => {
   const sql = `SELECT
   users.user_id,
+  users.user_email,
+  users.user_pass,
+  users.user_company_name,
   users.user_created_at,
   location.location_id,
   location.location_title,
@@ -167,6 +170,9 @@ interface LocationOnly {
 
 interface UserOnly {
   user_id: string;
+  user_email: string;
+  user_pass: string;
+  user_company_name: string;
   user_created_at: string;
   locations: LocationOnly[];
 }
@@ -177,6 +183,9 @@ function convertToTreeArray(data: any[]): UserOnly[] {
   data.forEach((item) => {
     const {
       user_id,
+      user_email,
+      user_pass,
+      user_company_name,
       user_created_at,
       location_id,
       location_title,
@@ -201,6 +210,9 @@ function convertToTreeArray(data: any[]): UserOnly[] {
     if (!userNode) {
       userNode = {
         user_id,
+        user_email,
+        user_pass,
+        user_company_name,
         user_created_at,
         locations: [],
       };

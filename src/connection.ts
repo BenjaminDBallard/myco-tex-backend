@@ -44,6 +44,9 @@ async function initializeDatabase() {
   const createStatements = [
     `CREATE TABLE IF NOT EXISTS users (
           user_id VARCHAR(100) NOT NULL PRIMARY KEY,
+          user_email VARCHAR(50),
+          user_pass VARCHAR(100),
+          user_company_name VARCHAR(50),
           user_created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );`,
 

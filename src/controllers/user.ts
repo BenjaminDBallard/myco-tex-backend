@@ -1,3 +1,4 @@
+import uniqid from "uniqid";
 import { NextFunction } from "express";
 import pool from "../connection.js";
 import jwt from "jsonwebtoken";
@@ -41,26 +42,52 @@ export const verifyJWT = (req: any, res: any, next: NextFunction) => {
 };
 
 export const logUser = async (req: any, res: any) => {
+  //Determine if user already exists
   try {
-    const user = req.body.parcel;
-    console.log("Successfully retrieved:" + user);
-    const [rows] = await con.execute("SELECT * FROM users WHERE user_id = ?", [
-      user,
-    ]);
+    const userEmail = req.body.user_email;
+    console.log("Successfully retrieved:" + userEmail);
+    const [rows] = await con.execute(
+      "SELECT * FROM users WHERE user_email = ?",
+      [userEmail]
+    );
     let tempResult: any = rows;
 
+    //If user does not already exist
     if (tempResult.length === 0) {
-      const query = `
-                INSERT INTO users (user_id)
-                VALUES (?)
-            `;
-      await con.execute(query, [user]);
-      return res.status(200).send("User Created");
+      //Post new user
+      const userId = uniqid();
+      const userPass = req.body.user_pass;
+      const userCompany = req.body.user_company_name;
+      const populateUserQuery =
+        "INSERT INTO users (user_id, user_email, user_pass, user_company_name) VALUES ?";
+      const populateUserValues = [[userId, userEmail, userPass, userCompany]];
+      await con.query(populateUserQuery, [populateUserValues]);
+
+      //Post new location to user
+      const locationId = uniqid();
+      const locationTitle = userCompany;
+      const populateLocationQuery =
+        "INSERT INTO location (user_id, location_id, location_title) VALUES ?;";
+      const populateLocationValues = [[userId, locationId, locationTitle]];
+      await con.query(populateLocationQuery, [populateLocationValues]);
+
+      //Post new rooms to location
+      const populateRoomsQuery =
+        "INSERT INTO room (location_id, room_id, room_title) VALUES ?";
+      const populateRoomsValues = [
+        [locationId, uniqid(), "Mixer"],
+        [locationId, uniqid(), "Steamer"],
+        [locationId, uniqid(), "Lab"],
+        [locationId, uniqid(), "Incubation"],
+      ];
+      await con.query(populateRoomsQuery, [populateRoomsValues]);
+
+      return res.status(200).send("user_id: " + userId);
     } else {
       return res.send("Welcome back");
     }
   } catch (err) {
-    console.error(err + "User failed to send");
+    console.error(err + "Initialial population of tables failed to send");
   }
 };
 
