@@ -64,7 +64,7 @@ https://github.com/BenjaminDBallard/myco-tex-sensors.
 Report: (GET Only)
 
 ```
-/api/report/:user_id
+/api/report/:user_id/:hist     //hist = true or false
 ```
 ```
 Returns a json output showing all current ID's needed to navigate API
@@ -72,7 +72,7 @@ Returns a json output showing all current ID's needed to navigate API
 Measure: (GET Only)
 
 ```
-/api/measure/:room_id
+/api/measure/:room_id/:hist    //hist = true or false
 ```
 ```
 Returns a Json file showing all measurements from all controllers within a room
@@ -144,7 +144,7 @@ Probe:
 ProbeCo2:
 
 ```
-/api/probesCo2/:probe_id
+/api/probesCo2/:probe_id/:hist     //hist = true or false
 ```
 ```
 {
@@ -155,7 +155,7 @@ ProbeCo2:
 ProbeHum:
 
 ```
-/api/probesHum/:probe_id
+/api/probesHum/:probe_id/:hist     //hist = true or false
 ```
 ```
 {
@@ -166,7 +166,7 @@ ProbeHum:
 ProbePpm:
 
 ```
-/api/probesPpm/:probe_id
+/api/probesPpm/:probe_id/:hist     //hist = true or false
 ```
 ```
 {
@@ -177,7 +177,7 @@ ProbePpm:
 ProbeTherm:
 
 ```
-/api/probesTherm/:probe_id
+/api/probesTherm/:probe_id/:hist     //hist = true or false
 ```
 ```
 {
