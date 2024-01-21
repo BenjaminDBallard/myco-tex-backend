@@ -1,7 +1,8 @@
 import pool from "../connection.js";
+import { Request, Response } from "express";
 const con = await pool.getConnection();
 
-export const getProbe = async (req: any, res: any) => {
+export const getProbe = async (req: Request, res: Response) => {
   try {
     const findProbesQuery = "SELECT * FROM probe WHERE controller_id = ?";
     const controller_id = req.params.controller_id;
@@ -16,7 +17,7 @@ export const getProbe = async (req: any, res: any) => {
   }
 };
 
-export const logProbe = async (req: any, res: any) => {
+export const logProbe = async (req: Request, res: Response) => {
   try {
     const createProbeQuery = `
             INSERT INTO probe (

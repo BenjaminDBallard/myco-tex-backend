@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import passUserRouter from "./routes/user.js";
@@ -13,14 +13,10 @@ import probeThermRouter from "./routes/probeTherm.js";
 import apiRouter from "./routes/api.js";
 import { verifyJWT } from "./controllers/user.js";
 
-
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-
-
 
 app.get("/isUserAuth", verifyJWT, (req, res) => {
   res.send("You are authenticated Congrats:");

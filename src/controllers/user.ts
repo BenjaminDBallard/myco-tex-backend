@@ -2,6 +2,7 @@ import uniqid from "uniqid";
 import { NextFunction } from "express";
 import pool from "../connection.js";
 import jwt from "jsonwebtoken";
+import { Request, Response } from "express";
 const con = await pool.getConnection();
 
 /*This middleware function can be used before accessing protected routes to confirm that
@@ -41,16 +42,26 @@ export const verifyJWT = (req: any, res: any, next: NextFunction) => {
   }
 };
 
-export const logUser = async (req: any, res: any) => {
+// interface UserArray {
+//   user_id?: string;
+//   user_email?: string;
+//   user_pass?: string;
+//   user_company_name?: string;
+//   user_created_at?: string;
+// }
+
+export const logUser = async (req: Request, res: Response) => {
   //Determine if user already exists
   try {
     const findUserQuery = "SELECT * FROM users WHERE user_email = ?;";
     const userEmail = req.body.user_email;
-    const [user] = await con.query(findUserQuery, userEmail);
-    let userArray: any = user;
+    const user = await con.query(findUserQuery, userEmail);
+    console.log(user);
+    // let userOptions = {user_id: user.}
+    // let userArray = new UserArray(user);
 
     //If user does not already exist
-    if (userArray.length === 0) {
+    if (!user) {
       //Post new user
       const populateUserQuery =
         "INSERT INTO users (user_id, user_email, user_pass, user_company_name) VALUES ?;";
@@ -90,7 +101,7 @@ export const logUser = async (req: any, res: any) => {
   }
 };
 
-export const getUser = async (req: any, res: any) => {
+export const getUser = async (req: Request, res: Response) => {
   const sql = "SELECT * FROM users";
   try {
     const formattedSql = con.format(sql);
@@ -127,7 +138,7 @@ const mockUserData = [
   },
 ];
 
-export const login = async (req: any, res: any) => {
+export const login = async (req: Request, res: Response) => {
   try {
     console.log("am i even here?");
     const body = req.body;

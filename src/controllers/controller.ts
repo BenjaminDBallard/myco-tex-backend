@@ -1,7 +1,8 @@
 import pool from "../connection.js";
+import { Request, Response } from "express";
 const con = await pool.getConnection();
 
-export const getController = async (req: any, res: any) => {
+export const getController = async (req: Request, res: Response) => {
   try {
     const findControlersQuery = "SELECT * FROM controller WHERE room_id = ?";
     const room_id = req.params.room_id;
@@ -16,7 +17,7 @@ export const getController = async (req: any, res: any) => {
   }
 };
 
-export const logController = async (req: any, res: any) => {
+export const logController = async (req: Request, res: Response) => {
   try {
     const createControllerQuery = `
             INSERT INTO controller (

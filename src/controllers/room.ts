@@ -1,8 +1,9 @@
 import uniqid from "uniqid";
 import pool from "../connection.js";
+import { Request, Response } from "express";
 const con = await pool.getConnection();
 
-export const getRoom = async (req: any, res: any) => {
+export const getRoom = async (req: Request, res: Response) => {
   try {
     const findRoomsQuery = "SELECT * FROM room WHERE location_id = ?;";
     const location_id = req.params.location_id;
@@ -17,11 +18,11 @@ export const getRoom = async (req: any, res: any) => {
   }
 };
 
-export const logRoom = async (req: any, res: any) => {
+export const logRoom = async (req: Request, res: Response) => {
   try {
     const createRoomSql =
       "INSERT INTO room (location_id, room_id, room_title) VALUES ?;";
-    let roomId = uniqid();
+    const roomId = uniqid();
     const createRoomValues = [
       [
         req.params.location_id,

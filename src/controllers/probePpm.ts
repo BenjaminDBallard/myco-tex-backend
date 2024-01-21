@@ -1,12 +1,21 @@
 import uniqid from "uniqid";
 import pool from "../connection.js";
+import { Request, Response } from "express";
 const con = await pool.getConnection();
 
-export const getProbePpm = async (req: any, res: any) => {
+export const getProbePpm = async (req: Request, res: Response) => {
+  const historical = req.params.hist;
+  let sql;
+  if (historical === "true") {
+    sql =
+      "SELECT * FROM probe_ppm WHERE probe_id = ? ORDER BY probe_ppm_created_at DESC";
+  } else {
+    sql =
+      "SELECT * FROM probe_ppm WHERE probe_id = ? ORDER BY probe_ppm_created_at DESC LIMIT 1";
+  }
   try {
-    const findMeasurementsQuery = "SELECT * FROM probe_ppm WHERE probe_id = ?";
     const probe_id = req.params.probe_id;
-    const [measurements] = await con.execute(findMeasurementsQuery, probe_id);
+    const [measurements] = await con.query(sql, probe_id);
 
     return res.status(200).json(measurements);
   } catch (err) {
@@ -17,7 +26,7 @@ export const getProbePpm = async (req: any, res: any) => {
   }
 };
 
-export const logProbePpm = async (req: any, res: any) => {
+export const logProbePpm = async (req: Request, res: Response) => {
   try {
     const createProbePpmQuery = `
             INSERT INTO probe_ppm (
@@ -28,7 +37,7 @@ export const logProbePpm = async (req: any, res: any) => {
             VALUES ?;
         `;
 
-    let probePpmId = uniqid();
+    const probePpmId = uniqid();
 
     const createProbePpmValues = [
       [

@@ -120,7 +120,7 @@ async function initializeDatabase() {
   ];
 
   try {
-    for (let statement of createStatements) {
+    for (const statement of createStatements) {
       await con.execute(statement);
     }
     console.log("[MySQL] Database initialized successfully.");

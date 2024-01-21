@@ -1,8 +1,9 @@
 import uniqid from "uniqid";
 import pool from "../connection.js";
+import { Request, Response } from "express";
 const con = await pool.getConnection();
 
-export const getLocation = async (req: any, res: any) => {
+export const getLocation = async (req: Request, res: Response) => {
   try {
     const findLocationQuery = "SELECT * FROM location WHERE user_id = ?";
     const user_id = req.params.user_id;
@@ -17,7 +18,7 @@ export const getLocation = async (req: any, res: any) => {
   }
 };
 
-export const logLocation = async (req: any, res: any) => {
+export const logLocation = async (req: Request, res: Response) => {
   console.log(req.body.location_title);
   console.log(uniqid());
   try {
