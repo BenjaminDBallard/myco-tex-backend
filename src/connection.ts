@@ -72,7 +72,6 @@ async function initializeDatabase() {
           controller_serial VARCHAR(50),
           controller_make VARCHAR(50),
           controller_model VARCHAR(50),
-          controller_ip VARCHAR(50),
           controller_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY(room_id) REFERENCES room(room_id)
       );`,

@@ -6,7 +6,8 @@ console.log("!!!!!! new ID !!!!!!!");
 console.log(uniqid());
 
 export const getMeasure = async (req: any, res: any) => {
-  const sql = `SELECT room.room_id, room.room_title, room.room_created_at, controller.controller_id, controller.controller_serial, controller.controller_make, controller.controller_model, controller.controller_created_at, probe.probe_id, probe.probe_make, probe.probe_model, probe.probe_type, probe.probe_created_at, probe_co2.probe_co2_id AS measure_id, probe_co2.probe_co2_measure AS measure, probe_co2.probe_c02_created_at AS measure_created_at
+  const sql = `
+  SELECT room.room_id, room.room_title, room.room_created_at, controller.controller_id, controller.controller_serial, controller.controller_make, controller.controller_model, controller.controller_created_at, probe.probe_id, probe.probe_make, probe.probe_model, probe.probe_type, probe.probe_created_at, probe_co2.probe_co2_id AS measure_id, probe_co2.probe_co2_measure AS measure, probe_co2.probe_c02_created_at AS measure_created_at
   FROM room 
   LEFT JOIN controller
     ON room.room_id = controller.room_id
@@ -20,7 +21,7 @@ export const getMeasure = async (req: any, res: any) => {
     ON probe.probe_id = probe_ppm.probe_id
   LEFT JOIN probe_therm
     ON probe.probe_id = probe_therm.probe_id
-  WHERE probe_co2_measure IS NOT NULL AND room.room_id = "d3j0b6a90lrk30zi3"
+  WHERE probe_co2_measure IS NOT NULL AND room.room_id = ?
 UNION ALL
 SELECT room.room_id, room.room_title, room.room_created_at, controller.controller_id, controller.controller_serial, controller.controller_make, controller.controller_model, controller.controller_created_at, probe.probe_id, probe.probe_make, probe.probe_model, probe.probe_type, probe.probe_created_at, probe_hum.probe_hum_id AS measure_id, probe_hum.probe_hum_measure AS measure, probe_hum.probe_hum_created_at AS measure_created_at
   FROM room 
@@ -36,7 +37,7 @@ SELECT room.room_id, room.room_title, room.room_created_at, controller.controlle
     ON probe.probe_id = probe_ppm.probe_id
   LEFT JOIN probe_therm
     ON probe.probe_id = probe_therm.probe_id
-  WHERE probe_hum_measure IS NOT NULL AND room.room_id = "d3j0b6a90lrk30zi3"
+  WHERE probe_hum_measure IS NOT NULL AND room.room_id = ?
 UNION ALL
 SELECT room.room_id, room.room_title, room.room_created_at, controller.controller_id, controller.controller_serial, controller.controller_make, controller.controller_model, controller.controller_created_at, probe.probe_id, probe.probe_make, probe.probe_model, probe.probe_type, probe.probe_created_at, probe_ppm.probe_ppm_id AS measure_id, probe_ppm.probe_ppm_measure AS measure, probe_ppm.probe_ppm_created_at AS measure_created_at
   FROM room 
@@ -52,7 +53,7 @@ SELECT room.room_id, room.room_title, room.room_created_at, controller.controlle
     ON probe.probe_id = probe_ppm.probe_id
   LEFT JOIN probe_therm
     ON probe.probe_id = probe_therm.probe_id
-    WHERE probe_ppm_measure IS NOT NULL AND room.room_id = "d3j0b6a90lrk30zi3"
+    WHERE probe_ppm_measure IS NOT NULL AND room.room_id = ?
 UNION ALL
 SELECT room.room_id, room.room_title, room.room_created_at, controller.controller_id, controller.controller_serial, controller.controller_make, controller.controller_model, controller.controller_created_at, probe.probe_id, probe.probe_make, probe.probe_model, probe.probe_type, probe.probe_created_at, probe_therm.probe_therm_id AS measure_id, probe_therm.probe_therm_measure AS measure, probe_therm.probe_therm_created_at AS measure_created_at
   FROM room 
@@ -68,14 +69,13 @@ SELECT room.room_id, room.room_title, room.room_created_at, controller.controlle
     ON probe.probe_id = probe_ppm.probe_id
   LEFT JOIN probe_therm
     ON probe.probe_id = probe_therm.probe_id
-  WHERE probe_therm_measure IS NOT NULL AND room.room_id = "d3j0b6a90lrk30zi3";
+  WHERE probe_therm_measure IS NOT NULL AND room.room_id = ?;
 `;
   try {
     const room_id = req.params.room_id;
-    const formattedSql = con.format(sql, room_id);
-    const [rows] = await con.execute(formattedSql);
+    const [rows] = await con.query(sql, [room_id, room_id, room_id, room_id]);
     let tabularData: any = rows;
-    const treeDataArray: User[] = convertMToTreeArray(tabularData);
+    const treeDataArray: User[] = convertMeasureToTreeArray(tabularData);
     const finalMeasure = treeDataArray[0].locations[0].rooms[0];
 
     return res.status(200).json(finalMeasure, null, 2);
@@ -125,7 +125,7 @@ WHERE users.user_id = ?;`;
     const formattedSql = con.format(sql, user_id);
     const [rows] = await con.execute(formattedSql);
     let tabularData: any = rows;
-    const treeDataArray: UserOnly[] = convertToTreeArray(tabularData);
+    const treeDataArray: UserReport[] = convertReportToTreeArray(tabularData);
     const finalReport = treeDataArray[0];
 
     return res.status(200).json(finalReport, null, 2);
@@ -137,7 +137,7 @@ WHERE users.user_id = ?;`;
   }
 };
 
-interface ProbeOnly {
+interface ProbeReport {
   probe_id: string;
   probe_make: string;
   probe_model: string;
@@ -145,40 +145,40 @@ interface ProbeOnly {
   probe_created_at: string;
 }
 
-interface ControllerOnly {
+interface ControllerReport {
   controller_id: string;
   controller_serial: string;
   controller_make: string;
   controller_model: string;
   controller_created_at: string;
-  probes: ProbeOnly[];
+  probes: ProbeReport[];
 }
 
-interface RoomOnly {
+interface RoomReport {
   room_id: string;
   room_title: string;
   room_created_at: string;
-  controllers: ControllerOnly[];
+  controllers: ControllerReport[];
 }
 
-interface LocationOnly {
+interface LocationReport {
   location_id: string;
   location_title: string;
   location_created_at: string;
-  rooms: RoomOnly[];
+  rooms: RoomReport[];
 }
 
-interface UserOnly {
+interface UserReport {
   user_id: string;
   user_email: string;
   user_pass: string;
   user_company_name: string;
   user_created_at: string;
-  locations: LocationOnly[];
+  locations: LocationReport[];
 }
 
-function convertToTreeArray(data: any[]): UserOnly[] {
-  const tree: UserOnly[] = [];
+function convertReportToTreeArray(data: any[]): UserReport[] {
+  const tree: UserReport[] = [];
 
   data.forEach((item) => {
     const {
@@ -287,7 +287,7 @@ function convertToTreeArray(data: any[]): UserOnly[] {
 
 interface Measurement {
   measure_id: string;
-  measure: string;
+  measure: number;
   measure_created_at: string;
 }
 interface Probe {
@@ -328,7 +328,7 @@ interface User {
   locations: Location[];
 }
 
-function convertMToTreeArray(data: any[]): User[] {
+function convertMeasureToTreeArray(data: any[]): User[] {
   const tree: User[] = [];
 
   data.forEach((item) => {

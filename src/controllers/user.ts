@@ -44,36 +44,33 @@ export const verifyJWT = (req: any, res: any, next: NextFunction) => {
 export const logUser = async (req: any, res: any) => {
   //Determine if user already exists
   try {
+    const findUserQuery = "SELECT * FROM users WHERE user_email = ?;";
     const userEmail = req.body.user_email;
-    console.log("Successfully retrieved:" + userEmail);
-    const [rows] = await con.execute(
-      "SELECT * FROM users WHERE user_email = ?",
-      [userEmail]
-    );
-    let tempResult: any = rows;
+    const [user] = await con.query(findUserQuery, userEmail);
+    let userArray: any = user;
 
     //If user does not already exist
-    if (tempResult.length === 0) {
+    if (userArray.length === 0) {
       //Post new user
+      const populateUserQuery =
+        "INSERT INTO users (user_id, user_email, user_pass, user_company_name) VALUES ?;";
       const userId = uniqid();
       const userPass = req.body.user_pass;
       const userCompany = req.body.user_company_name;
-      const populateUserQuery =
-        "INSERT INTO users (user_id, user_email, user_pass, user_company_name) VALUES ?";
       const populateUserValues = [[userId, userEmail, userPass, userCompany]];
       await con.query(populateUserQuery, [populateUserValues]);
 
       //Post new location to user
-      const locationId = uniqid();
-      const locationTitle = userCompany;
       const populateLocationQuery =
         "INSERT INTO location (user_id, location_id, location_title) VALUES ?;";
+      const locationId = uniqid();
+      const locationTitle = userCompany;
       const populateLocationValues = [[userId, locationId, locationTitle]];
       await con.query(populateLocationQuery, [populateLocationValues]);
 
       //Post new rooms to location
       const populateRoomsQuery =
-        "INSERT INTO room (location_id, room_id, room_title) VALUES ?";
+        "INSERT INTO room (location_id, room_id, room_title) VALUES ?;";
       const populateRoomsValues = [
         [locationId, uniqid(), "Mixer"],
         [locationId, uniqid(), "Steamer"],
@@ -87,15 +84,11 @@ export const logUser = async (req: any, res: any) => {
       return res.send("Welcome back");
     }
   } catch (err) {
-    console.error(err + "Initialial population of tables failed to send");
+    return res.status(500).send(err + "Initialial table population failed");
+  } finally {
+    con.release();
   }
 };
-
-// export const getUser = async (req: any, res: any) => {
-//   const user = req.params;
-//   console.log(user);
-//   return res.status(200).json({ user_id: user });
-// };
 
 export const getUser = async (req: any, res: any) => {
   const sql = "SELECT * FROM users";

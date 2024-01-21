@@ -3,13 +3,12 @@ import pool from "../connection.js";
 const con = await pool.getConnection();
 
 export const getProbeTherm = async (req: any, res: any) => {
-  const sql = "SELECT * FROM probe_therm WHERE probe_id = ?";
+  const findMeasurementsQuery = "SELECT * FROM probe_therm WHERE probe_id = ?";
   try {
     const probe_id = req.params.probe_id;
-    const formattedSql = con.format(sql, probe_id);
-    const [rows] = await con.execute(formattedSql);
+    const [measurements] = await con.execute(findMeasurementsQuery, probe_id);
 
-    return res.status(200).json(rows);
+    return res.status(200).json(measurements);
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);
@@ -19,33 +18,35 @@ export const getProbeTherm = async (req: any, res: any) => {
 };
 
 export const logProbeTherm = async (req: any, res: any) => {
-  console.log(req.body);
-
   try {
-    const createProbeThermSql = `
+    const createProbeThermQuery = `
             INSERT INTO probe_therm (
                 probe_id,
                 probe_therm_id,
                 probe_therm_measure
             )
-            VALUES (?, ?, ?)
+            VALUES ?;
         `;
 
-    let newID = uniqid();
+    let probeThermId = uniqid();
 
-    const values = [
-      req.params.probe_id, // Required
-      newID,
-      req.body.probe_therm_measure?.substring(0, 7) || null,
+    const createProbeThermValues = [
+      [
+        req.params.probe_id, // Required
+        probeThermId,
+        req.body.probe_therm_measure,
+      ],
     ];
+    await con.execute(createProbeThermQuery, [createProbeThermValues]);
 
-    const formattedSql = con.format(createProbeThermSql, values);
-    const [rows] = await con.execute(formattedSql);
-    let tempResult: any = rows;
-    // Access the insertId property on the result object
-    const probeThermId = tempResult.insertId;
-
-    return res.status(200).json({ probeThermId });
+    return res
+      .status(200)
+      .json(
+        "ProbeThermId: " +
+          probeThermId +
+          " Measure: " +
+          req.body.probe_therm_measure
+      );
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);

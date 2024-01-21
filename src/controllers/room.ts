@@ -3,13 +3,12 @@ import pool from "../connection.js";
 const con = await pool.getConnection();
 
 export const getRoom = async (req: any, res: any) => {
-  const sql = "SELECT * FROM room WHERE location_id = ?";
   try {
+    const findRoomsQuery = "SELECT * FROM room WHERE location_id = ?;";
     const location_id = req.params.location_id;
-    const formattedSql = con.format(sql, location_id);
-    const [rows] = await con.execute(formattedSql);
+    const [rooms] = await con.query(findRoomsQuery, location_id);
 
-    return res.status(200).json(rows);
+    return res.status(200).json(rooms);
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);
@@ -19,31 +18,20 @@ export const getRoom = async (req: any, res: any) => {
 };
 
 export const logRoom = async (req: any, res: any) => {
-  console.log(req.body);
-
   try {
-    const createRoomSql = `
-            INSERT INTO room (
-                location_id,
-                room_id,
-                room_title
-            )
-            VALUES (?, ?, ?)
-        `;
-    let newID = uniqid();
-    const values = [
-      req.params.location_id, // Required
-      newID,
-      req.body.room_title?.substring(0, 100) || null,
+    const createRoomSql =
+      "INSERT INTO room (location_id, room_id, room_title) VALUES ?;";
+    let roomId = uniqid();
+    const createRoomValues = [
+      [
+        req.params.location_id,
+        roomId,
+        req.body.room_title?.substring(0, 50) || null,
+      ],
     ];
+    await con.query(createRoomSql, [createRoomValues]);
 
-    const formattedSql = con.format(createRoomSql, values);
-    const [rows] = await con.execute(formattedSql);
-    let tempResult: any = rows;
-    // Access the insertId property on the result object
-    const roomId = tempResult.insertId;
-
-    return res.status(200).json({ roomId });
+    return res.status(200).json("Room_id: " + roomId);
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);

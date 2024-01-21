@@ -3,13 +3,12 @@ import pool from "../connection.js";
 const con = await pool.getConnection();
 
 export const getProbeCo2 = async (req: any, res: any) => {
-  const sql = "SELECT * FROM probe_co2 WHERE probe_id = ?";
   try {
+    const findMeasurementsQuery = "SELECT * FROM probe_co2 WHERE probe_id = ?";
     const probe_id = req.params.probe_id;
-    const formattedSql = con.format(sql, probe_id);
-    const [rows] = await con.execute(formattedSql);
+    const [measurements] = await con.query(findMeasurementsQuery, probe_id);
 
-    return res.status(200).json(rows);
+    return res.status(200).json(measurements);
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);
@@ -19,33 +18,31 @@ export const getProbeCo2 = async (req: any, res: any) => {
 };
 
 export const logProbeCo2 = async (req: any, res: any) => {
-  console.log(req.body);
-
   try {
-    const createProbeCo2Sql = `
+    const createProbeCo2Query = `
             INSERT INTO probe_co2 (
                 probe_id,
                 probe_co2_id,
                 probe_co2_measure
             )
-            VALUES (?, ?, ?)
+            VALUES ?;
         `;
 
-    let newID = uniqid();
-
-    const values = [
-      req.params.probe_id, // Required
-      newID,
-      req.body.probe_co2_measure?.substring(0, 7) || null,
+    let probeCo2Id = uniqid();
+    const createProbeCo2values = [
+      [
+        req.params.probe_id, // Required
+        probeCo2Id,
+        req.body.probe_co2_measure,
+      ],
     ];
+    await con.query(createProbeCo2Query, [createProbeCo2values]);
 
-    const formattedSql = con.format(createProbeCo2Sql, values);
-    const [rows] = await con.execute(formattedSql);
-    let tempResult: any = rows;
-    // Access the insertId property on the result object
-    const probeCo2Id = tempResult.insertId;
-
-    return res.status(200).json({ probeCo2Id });
+    return res
+      .status(200)
+      .json(
+        "ProbeCo2Id: " + probeCo2Id + " Measure: " + req.body.probe_co2_measure
+      );
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);
