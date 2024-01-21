@@ -61,25 +61,42 @@ https://github.com/BenjaminDBallard/myco-tex-sensors.
 ## Endpoints 
 >and example post body
 
+Report: (GET Only)
+
+```
+/api/report/:user_id
+```
+```
+Returns a json output showing all current ID's needed to navigate API
+```
+Measure: (GET Only)
+
+```
+/api/measure/:room_id
+```
+```
+Returns a Json file showing all measurements from all controllers within a room
+```
 User:
 
 ```
-http://localhost:3000/api/user
+/api/user
 ```
 ```
 {
-    "parcel": "userID001"
+    "user_email": "test@test.com",
+    "user_pass": "password",
+    "user_company_name": "Company"
 }
 ```
 
 Location:
 
 ```
-http://localhost:3000/api/location/${user_id}
+/api/location/:user_id
 ```
 ```
 {
-    "user_id": "userID001",
     "location_title": "mycoLab"
 }
 ```
@@ -87,11 +104,10 @@ http://localhost:3000/api/location/${user_id}
 Room:
 
 ```
-http://localhost:3000/api/room/${location_id}
+/api/room/:location_id
 ```
 ```
 {
-    "location_id": "1",
     "room_title": "incubation"
 }
 ```
@@ -99,11 +115,11 @@ http://localhost:3000/api/room/${location_id}
 Controller:
 
 ```
-http://localhost:3000/api/controller/${room_id}
+/api/controller/:room_id
 ```
 ```
 {
-    "room_id": "1",
+    "controller_id": "1",
     "controller_serial": "1234qwer5678",
     "controller_make": "espressif",
     "controller_model": "esp32-wroom-32u",
@@ -114,11 +130,11 @@ http://localhost:3000/api/controller/${room_id}
 Probe:
 
 ```
-http://localhost:3000/api/probe/${controller_id}
+/api/probe/:controller_id
 ```
 ```
 {
-    "controller_id": "1",
+    "probe_id": "1",
     "probe_make": "makeofprobe",
     "probe_model": "probemodel",
     "probe_type": "therm"
@@ -128,11 +144,10 @@ http://localhost:3000/api/probe/${controller_id}
 ProbeCo2:
 
 ```
-http://localhost:3000/api/probesCo2/${probe_id}
+/api/probesCo2/:probe_id
 ```
 ```
 {
-    "probe_id": "1",
     "probe_co2_measure": "128"
 }
 ```
@@ -140,11 +155,10 @@ http://localhost:3000/api/probesCo2/${probe_id}
 ProbeHum:
 
 ```
-http://localhost:3000/api/probesHum/${probe_id}
+/api/probesHum/:probe_id
 ```
 ```
 {
-    "probe_id": "1",
     "probe_hum_measure": "130"
 }
 ```
@@ -152,11 +166,10 @@ http://localhost:3000/api/probesHum/${probe_id}
 ProbePpm:
 
 ```
-http://localhost:3000/api/probesPpm/${probe_id}
+/api/probesPpm/:probe_id
 ```
 ```
 {
-    "probe_id": "1",
     "probe_ppm_measure": "320"
 }
 ```
@@ -164,11 +177,10 @@ http://localhost:3000/api/probesPpm/${probe_id}
 ProbeTherm:
 
 ```
-http://localhost:3000/api/probesTherm/${probe_id}
+/api/probesTherm/:probe_id
 ```
 ```
 {
-    "probe_id": "1",
     "probe_therm_measure": "70"
 }
 ```
