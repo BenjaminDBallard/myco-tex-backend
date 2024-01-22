@@ -80,9 +80,11 @@ Returns a Json file showing all measurements from all controllers within a room
 User:
 
 ```
-/api/user
+>POST /api/user
+>GET & PUT /api/user/:user_id
 ```
 ```
+>POST & PUT req body:
 {
     "user_email": "test@test.com",
     "user_pass": "password",
@@ -93,9 +95,11 @@ User:
 Location:
 
 ```
-/api/location/:user_id
+>GET & POST /api/location/:user_id
+>PUT /api/location/:location_id
 ```
 ```
+>POST & PUT req body
 {
     "location_title": "mycoLab"
 }
@@ -104,9 +108,11 @@ Location:
 Room:
 
 ```
-/api/room/:location_id
+>GET & POST /api/room/:location_id
+>PUT /api/room/:room_id
 ```
 ```
+>POST & PUT req body
 {
     "room_title": "incubation"
 }
@@ -115,28 +121,47 @@ Room:
 Controller:
 
 ```
-/api/controller/:room_id
+>GET & POST /api/controller/:room_id
+>PUT /api/controller/:controller_id
 ```
 ```
+>POST req body
 {
     "controller_id": "1",
     "controller_serial": "1234qwer5678",
     "controller_make": "espressif",
-    "controller_model": "esp32-wroom-32u",
-    "controller_ip": "123.456.678"
+    "controller_model": "esp32-wroom-32u"
+}
+
+>PUT req body
+{
+    "room_id": "d3j0b6or6lrmshr0j",
+    "controller_serial": "1234qwer56784@",
+    "controller_make": "espressif4@",
+    "controller_model": "esp32-wroom-324u@"
 }
 ```
 
 Probe:
 
 ```
-/api/probe/:controller_id
+>GET & POST /api/probe/:controller_id
+>PUT /api/probe/:probe_id
 ```
 ```
+>POST req body
 {
     "probe_id": "1",
     "probe_make": "makeofprobe",
     "probe_model": "probemodel",
+    "probe_type": "therm"
+}
+
+>PUT req body
+{
+    "controller_id": "d3j0b6a90lrk32laj3",
+    "probe_make": "makeofpfobe@@",
+    "probe_model": "probemofdel@@",
     "probe_type": "therm"
 }
 ```
