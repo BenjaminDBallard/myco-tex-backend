@@ -102,12 +102,55 @@ export const logUser = async (req: Request, res: Response) => {
 };
 
 export const getUser = async (req: Request, res: Response) => {
-  const sql = "SELECT * FROM users";
+  const sql = "SELECT * FROM users WHERE user_id = ?;";
   try {
-    const formattedSql = con.format(sql);
+    const userId = req.params.user_id;
+    const formattedSql = con.format(sql, userId);
     const [rows] = await con.execute(formattedSql);
 
     return res.status(200).json(rows);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send(err);
+  } finally {
+    con.release();
+  }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+  const fields = ["user_email", "user_pass", "user_company_name"];
+
+  const setClauses = fields.map((field) => `${field} = ?`);
+  const values = fields.map((field) => {
+    const value = req.body[field];
+    return value != null ? value : null; // If value is null or undefined, replace with null
+  });
+  console.log(values);
+
+  const sql = `UPDATE users SET ${setClauses.join(", ")} WHERE user_id = ?`;
+  values.push(req.params.user_id);
+
+  const con = await pool.getConnection();
+  try {
+    const formattedSql = con.format(sql, values);
+    const [rows] = await con.execute(formattedSql);
+    const tabularRow: any = rows;
+
+    if (tabularRow.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ message: "User not found or unauthorized" });
+    }
+
+    // After updating, fetch the updated job data
+    const [updatedUser] = await con.execute(
+      "SELECT * FROM users WHERE user_id = ?",
+      [req.params.user_id]
+    );
+    const tabularData: any = updatedUser;
+    console.log(updatedUser);
+
+    return res.status(200).json(tabularData); // Assumes the first record is the updated job data
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);

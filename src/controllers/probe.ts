@@ -53,3 +53,45 @@ export const logProbe = async (req: Request, res: Response) => {
     con.release();
   }
 };
+
+export const updateProbe = async (req: Request, res: Response) => {
+  const fields = ["controller_id", "probe_make", "probe_model", "probe_type"];
+
+  const setClauses = fields.map((field) => `${field} = ?`);
+  const values = fields.map((field) => {
+    const value = req.body[field];
+    return value != null ? value : null; // If value is null or undefined, replace with null
+  });
+  console.log(values);
+
+  const sql = `UPDATE probe SET ${setClauses.join(", ")} WHERE probe_id = ?`;
+  values.push(req.params.probe_id);
+
+  const con = await pool.getConnection();
+  try {
+    const formattedSql = con.format(sql, values);
+    const [rows] = await con.execute(formattedSql);
+    const tabularRow: any = rows;
+
+    if (tabularRow.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ message: "Probe not found or unauthorized" });
+    }
+
+    // After updating, fetch the updated job data
+    const [updatedProbe] = await con.execute(
+      "SELECT * FROM probe WHERE probe_id = ?",
+      [req.params.probe_id]
+    );
+    const tabularData: any = updatedProbe;
+    console.log(updatedProbe);
+
+    return res.status(200).json(tabularData); // Assumes the first record is the updated job data
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send(err);
+  } finally {
+    con.release();
+  }
+};
