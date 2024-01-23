@@ -5,11 +5,31 @@ const con = await pool.getConnection();
 
 export const getRoom = async (req: Request, res: Response) => {
   try {
-    const findRoomsQuery = "SELECT * FROM room WHERE location_id = ?;";
-    const location_id = req.params.location_id;
-    const [rooms] = await con.query(findRoomsQuery, location_id);
+    //This user id is passed to us by verifyJWT()
+    const userID = req.params.user_id;
+    const findRoomsQuery = `SELECT location.location_id, location.user_id, room.room_id, room.room_title, room.room_created_at
+     FROM location 
+     LEFT JOIN room 
+     ON location.location_id = room.location_id
+     WHERE location.location_id = ?`;
 
-    return res.status(200).json(rooms);
+    const location_id = req.params.location_id;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rooms: any = await con.query(findRoomsQuery, location_id);
+
+    if (rooms.length === 0)
+      return res.status(500).send("0 rooms available for this location");
+
+    const userIDFromSQL = rooms[0][0].user_id;
+
+    //if user id associated with location is different from user id provided in request, throw error
+    if (userIDFromSQL !== userID) {
+      return res
+        .status(401)
+        .send("You do not have permission to view this location");
+    }
+
+    return res.status(200).json(rooms[0]);
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);

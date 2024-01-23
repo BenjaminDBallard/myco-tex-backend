@@ -19,7 +19,9 @@ export const verifyJWT = (req: any, res: any, next: NextFunction) => {
     if (!token) {
       res.send("Auth token not included in request");
     } else {
-      jwt.verify(token, "jwtSecret", (err: any, decoded: any) => {
+      const accessToken: string | undefined = process.env.access_token;
+      if (!accessToken) return res.status(500).send("Access token not found");
+      jwt.verify(token, accessToken, (err: any, decoded: any) => {
         if (err) {
           console.log(err);
           res.status(401).json({
@@ -32,7 +34,7 @@ export const verifyJWT = (req: any, res: any, next: NextFunction) => {
           decoded.hasOwnProperty("id")
         ) {
           const id: string = decoded.id;
-          req.userId = decoded.id;
+          req.params.user_id = decoded.id;
           next();
         }
       });
@@ -55,13 +57,12 @@ export const logUser = async (req: Request, res: Response) => {
   try {
     const findUserQuery = "SELECT * FROM users WHERE user_email = ?;";
     const userEmail = req.body.user_email;
-    const user = await con.query(findUserQuery, userEmail);
-    console.log(user);
+    const user: any = await con.query(findUserQuery, userEmail);
     // let userOptions = {user_id: user.}
     // let userArray = new UserArray(user);
 
     //If user does not already exist
-    if (!user) {
+    if (!user[0].length) {
       //Post new user
       const populateUserQuery =
         "INSERT INTO users (user_id, user_email, user_pass, user_company_name) VALUES ?;";
@@ -92,7 +93,16 @@ export const logUser = async (req: Request, res: Response) => {
 
       return res.status(200).send("user_id: " + userId);
     } else {
-      return res.send("Welcome back");
+      const accessToken: string | undefined = process.env.access_token;
+      if (!accessToken) return res.status(500).send("Access token not found");
+      const id = user[0][0].user_id;
+      const token = jwt.sign({ id }, accessToken, { expiresIn: 300 });
+      return res.json({
+        auth: true,
+        token: token,
+        user_id: id,
+        status: 200,
+      });
     }
   } catch (err) {
     return res.status(500).send(err + "Initialial table population failed");
@@ -183,37 +193,38 @@ const mockUserData = [
 
 export const login = async (req: Request, res: Response) => {
   try {
-    console.log("am i even here?");
-    const body = req.body;
-    let profileFound = false;
+    return res.status(500).send("wrong fuckin endpoint dumbass");
+    // const body = req.body;
+    // let profileFound = false;
 
-    let userProfile: UserProfile = {
-      email: "",
-      password: "",
-      companyName: "",
-      id: 0,
-    };
+    // let userProfile: UserProfile = {
+    //   email: "",
+    //   password: "",
+    //   companyName: "",
+    //   id: 0,
+    // };
 
-    for (const profile of mockUserData) {
-      console.log(profile);
-      if (profile.email === body.email) {
-        userProfile = profile;
-        profileFound = true;
-        break;
-      }
-    }
-    if (!profileFound) {
-      return res.status(404).send("Profile not found");
-    }
-    const id = userProfile.id;
-    const token = jwt.sign({ id }, "jwtSecret", { expiresIn: 30 });
-    // req.session.user = userProfile;
-    return res.json({
-      auth: true,
-      token: token,
-      result: userProfile,
-      status: 200,
-    });
+    // for (const profile of mockUserData) {
+    //   if (profile.email === body.email) {
+    //     userProfile = profile;
+    //     profileFound = true;
+    //     break;
+    //   }
+    // }
+    // if (!profileFound) {
+    //   return res.status(404).send("Profile not found");
+    // }
+    // const accessToken: string | undefined = process.env.access_token;
+    // if (!accessToken) return res.status(500).send("Access token not found");
+    // const id = userProfile.id;
+    // const token = jwt.sign({ id }, accessToken, { expiresIn: 300 });
+    // // req.session.user = userProfile;
+    // return res.json({
+    //   auth: true,
+    //   token: token,
+    //   user_id: id,
+    //   status: 200,
+    // });
   } catch {
     return res.status(500).send("Invalid request details");
   }

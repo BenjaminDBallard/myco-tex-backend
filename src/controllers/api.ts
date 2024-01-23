@@ -38,6 +38,7 @@ export const getMeasure = async (req: Request, res: Response) => {
 export const getReport = async (req: Request, res: Response) => {
   const sql = reportQuery;
   try {
+    console.log(req);
     const user_id = req.params.user_id;
     // const formattedSql = con.format(sql, user_id);
     const rows = await con.query(sql, user_id);

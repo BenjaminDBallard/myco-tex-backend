@@ -33,7 +33,7 @@ async function initializeDatabase() {
   // ];
   // try {
   //   console.log("[MySQL] Deleting tables...");
-  //   for (let statement of dropTableStatements) {
+  //   for (const statement of dropTableStatements) {
   //     await con.execute(statement);
   //   }
   //   console.log("[MySQL] Deleted tables.");
