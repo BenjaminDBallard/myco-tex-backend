@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { logUser, login, getUser, updateUser } from "../controllers/user.js";
+import { logUser, getUser, updateUser } from "../controllers/user.js";
+import { verifyJWT } from "../middleware/verifyJwt.js";
 
 const router = Router();
 
 router.post("/", logUser);
-router.get("/:user_id", getUser);
-router.put("/:user_id", updateUser);
-router.post("/login", login);
+router.get("/", verifyJWT, getUser);
+router.put("/", verifyJWT, updateUser);
 
 export default router;

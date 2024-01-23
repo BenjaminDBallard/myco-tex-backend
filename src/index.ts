@@ -11,7 +11,7 @@ import probeHumRouter from "./routes/probeHum.js";
 import probePpmRouter from "./routes/probePpm.js";
 import probeThermRouter from "./routes/probeTherm.js";
 import apiRouter from "./routes/api.js";
-import { verifyJWT } from "./controllers/user.js";
+import { verifyJWT } from "./middleware/verifyJwt.js";
 
 const app = express();
 

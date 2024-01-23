@@ -1,62 +1,15 @@
 import uniqid from "uniqid";
-import { NextFunction } from "express";
 import pool from "../connection.js";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 const con = await pool.getConnection();
-
-/*This middleware function can be used before accessing protected routes to confirm that
-1) An auth-token is present on the request
-2) The auth-token in the request is valid
-If both conditions are met, then the next() function is called, allowing access to the protected route
-
-Example of how to use verifyJWT:
-router.post("/protected-route", verifyJWTFunction, protectedRouteFunction);
-*/
-export const verifyJWT = (req: any, res: any, next: NextFunction) => {
-  try {
-    const token = req.headers["x-access-token"];
-    if (!token) {
-      res.send("Auth token not included in request");
-    } else {
-      const accessToken: string | undefined = process.env.access_token;
-      if (!accessToken) return res.status(500).send("Access token not found");
-      jwt.verify(token, accessToken, (err: any, decoded: any) => {
-        if (err) {
-          console.log(err);
-          res.status(401).json({
-            auth: false,
-            message: "Your auth token is invalid or expired",
-            status: 401,
-          });
-        } else if (
-          typeof decoded !== "undefined" &&
-          decoded.hasOwnProperty("id")
-        ) {
-          const id: string = decoded.id;
-          req.params.user_id = decoded.id;
-          next();
-        }
-      });
-    }
-  } catch {
-    return res.status(401).send("Your auth token has expired");
-  }
-};
-
-// interface UserArray {
-//   user_id?: string;
-//   user_email?: string;
-//   user_pass?: string;
-//   user_company_name?: string;
-//   user_created_at?: string;
-// }
 
 export const logUser = async (req: Request, res: Response) => {
   //Determine if user already exists
   try {
     const findUserQuery = "SELECT * FROM users WHERE user_email = ?;";
     const userEmail = req.body.user_email;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const user: any = await con.query(findUserQuery, userEmail);
     // let userOptions = {user_id: user.}
     // let userArray = new UserArray(user);
@@ -114,11 +67,25 @@ export const logUser = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
   const sql = "SELECT * FROM users WHERE user_id = ?;";
   try {
-    const userId = req.params.user_id;
-    const formattedSql = con.format(sql, userId);
-    const [rows] = await con.execute(formattedSql);
+    //This user id is passed to us by verifyJWT()
+    const jwtUserID = req.params.user_id;
+    //sql query implicitly only allows users to look at their own user info
+    const formattedSql = con.format(sql, jwtUserID);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const users: any = await con.query(formattedSql);
 
-    return res.status(200).json(rows);
+    if (users.length === 0) return res.status(500).send("user does not exist");
+
+    const sqlUserID = users[0][0].user_id;
+
+    //if user id in db is different from user id provided in request, throw error
+    if (sqlUserID !== jwtUserID) {
+      return res
+        .status(401)
+        .send("You do not have permission to view this user");
+    }
+
+    return res.status(200).json(users[0][0]);
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);
@@ -130,20 +97,24 @@ export const getUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   const fields = ["user_email", "user_pass", "user_company_name"];
 
+  //This user id is passed to us by verifyJWT()
+  const jwtUserID = req.params.user_id;
   const setClauses = fields.map((field) => `${field} = ?`);
   const values = fields.map((field) => {
     const value = req.body[field];
     return value != null ? value : null; // If value is null or undefined, replace with null
   });
-  console.log(values);
 
+  //sql query implicitly only allows users to edit their own user info
   const sql = `UPDATE users SET ${setClauses.join(", ")} WHERE user_id = ?`;
-  values.push(req.params.user_id);
+  values.push(jwtUserID);
 
   const con = await pool.getConnection();
   try {
     const formattedSql = con.format(sql, values);
-    const [rows] = await con.execute(formattedSql);
+
+    const [rows] = await con.query(formattedSql);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tabularRow: any = rows;
 
     if (tabularRow.affectedRows === 0) {
@@ -155,10 +126,10 @@ export const updateUser = async (req: Request, res: Response) => {
     // After updating, fetch the updated job data
     const [updatedUser] = await con.execute(
       "SELECT * FROM users WHERE user_id = ?",
-      [req.params.user_id]
+      [jwtUserID]
     );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tabularData: any = updatedUser;
-    console.log(updatedUser);
 
     return res.status(200).json(tabularData); // Assumes the first record is the updated job data
   } catch (err) {
@@ -166,66 +137,5 @@ export const updateUser = async (req: Request, res: Response) => {
     return res.status(500).send(err);
   } finally {
     con.release();
-  }
-};
-
-type UserProfile = {
-  email: string;
-  password: string;
-  companyName: string;
-  id: number;
-};
-
-const mockUserData = [
-  {
-    email: "jasoncornish14@gmail.com",
-    password: "yabbadabba",
-    companyName: "Myco-Tex",
-    id: 123456789,
-  },
-  {
-    email: "demo@mycotex.com",
-    password: "password",
-    companyName: "Demo User",
-    id: 123456788,
-  },
-];
-
-export const login = async (req: Request, res: Response) => {
-  try {
-    return res.status(500).send("wrong fuckin endpoint dumbass");
-    // const body = req.body;
-    // let profileFound = false;
-
-    // let userProfile: UserProfile = {
-    //   email: "",
-    //   password: "",
-    //   companyName: "",
-    //   id: 0,
-    // };
-
-    // for (const profile of mockUserData) {
-    //   if (profile.email === body.email) {
-    //     userProfile = profile;
-    //     profileFound = true;
-    //     break;
-    //   }
-    // }
-    // if (!profileFound) {
-    //   return res.status(404).send("Profile not found");
-    // }
-    // const accessToken: string | undefined = process.env.access_token;
-    // if (!accessToken) return res.status(500).send("Access token not found");
-    // const id = userProfile.id;
-    // const token = jwt.sign({ id }, accessToken, { expiresIn: 300 });
-    // // req.session.user = userProfile;
-    // return res.json({
-    //   auth: true,
-    //   token: token,
-    //   user_id: id,
-    //   status: 200,
-    // });
-  } catch {
-    return res.status(500).send("Invalid request details");
   }
 };
