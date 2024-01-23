@@ -4,11 +4,12 @@ import {
   logLocation,
   updateLocation,
 } from "../controllers/location.js";
+import { verifyJWT } from "../middleware/verifyJwt.js";
 
 const router = Router();
 
-router.get("/:user_id", getLocation);
-router.post("/:user_id", logLocation);
-router.put("/:location_id", updateLocation);
+router.get("/", verifyJWT, getLocation);
+router.post("/", verifyJWT, logLocation);
+router.put("/:location_id", verifyJWT, updateLocation);
 
 export default router;

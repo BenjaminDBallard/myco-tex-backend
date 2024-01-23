@@ -5,11 +5,31 @@ const con = await pool.getConnection();
 
 export const getLocation = async (req: Request, res: Response) => {
   try {
-    const findLocationQuery = "SELECT * FROM location WHERE user_id = ?";
-    const user_id = req.params.user_id;
-    const [location] = await con.query(findLocationQuery, user_id);
+    //This user id is passed to us by verifyJWT()
+    const jwtUserID = req.params.user_id;
+    //user is only able to get a location under their own user_id via sql query
+    const findLocationQuery = `SELECT location.*
+    FROM users
+    LEFT JOIN location
+      ON users.user_id = location.user_id
+    WHERE users.user_id = ?;`;
 
-    return res.status(200).json(location);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const locations: any = await con.query(findLocationQuery, jwtUserID);
+
+    if (locations.length === 0)
+      return res.status(500).send("0 locations available for this user");
+
+    const sqlUserID = locations[0][0].user_id;
+
+    //if user id associated with location is different from user id provided in request, throw error
+    if (sqlUserID !== jwtUserID) {
+      return res
+        .status(401)
+        .send("You do not have permission to view this location");
+    }
+
+    return res.status(200).json(locations[0]);
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);
@@ -19,15 +39,17 @@ export const getLocation = async (req: Request, res: Response) => {
 };
 
 export const logLocation = async (req: Request, res: Response) => {
-  console.log(req.body.location_title);
-  console.log(uniqid());
   try {
+    //This user id is passed to us by verifyJWT()
+    const jwtUserID = req.params.user_id;
+
+    //user is only able to post a location under their own user_id via sql query
     const createLocationSql =
       "INSERT INTO location (user_id, location_id, location_title) VALUES ?;";
     const locationId = uniqid();
     const locationTitle = req.body.location_title;
     const createLocationValues = [
-      [req.params.user_id, locationId, locationTitle?.substring(0, 50) || null],
+      [jwtUserID, locationId, locationTitle?.substring(0, 50) || null],
     ];
     await con.query(createLocationSql, [createLocationValues]);
 
@@ -43,6 +65,9 @@ export const logLocation = async (req: Request, res: Response) => {
 export const updateLocation = async (req: Request, res: Response) => {
   const fields = ["location_title"];
 
+  //This user id is passed to us by verifyJWT()
+  const jwtUserID = req.params.user_id;
+
   const setClauses = fields.map((field) => `${field} = ?`);
   const values = fields.map((field) => {
     const value = req.body[field];
@@ -52,13 +77,15 @@ export const updateLocation = async (req: Request, res: Response) => {
 
   const sql = `UPDATE location SET ${setClauses.join(
     ", "
-  )} WHERE location_id = ?`;
-  values.push(req.params.location_id);
+  )} WHERE location_id = ? AND location.user_id = ?`;
+  //user is only able to update a location under their own user_id via sql query
+  values.push(req.params.location_id, jwtUserID);
 
   const con = await pool.getConnection();
   try {
     const formattedSql = con.format(sql, values);
-    const [rows] = await con.execute(formattedSql);
+    const [rows] = await con.query(formattedSql);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tabularRow: any = rows;
 
     if (tabularRow.affectedRows === 0) {
@@ -69,9 +96,10 @@ export const updateLocation = async (req: Request, res: Response) => {
 
     // After updating, fetch the updated job data
     const [updatedLocation] = await con.execute(
-      "SELECT * FROM location WHERE location_id = ?",
-      [req.params.location_id]
+      "SELECT * FROM location WHERE location_id = ? AND location.user_id = ?;",
+      [req.params.location_id, jwtUserID]
     );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tabularData: any = updatedLocation;
     console.log(updatedLocation);
 

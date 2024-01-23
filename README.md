@@ -13,15 +13,15 @@ Current work is focused on establishing a monitoring system and database for tem
 ## Related Projects/Modules
 
 - **myco-tex-backend** This project. Serves up REST
-endpoints for dashboard application using express, node, & mysql2.
+  endpoints for dashboard application using express, node, & mysql2.
 
 - **myco-tex-dashboard** This is the main dashboard application used for monitoring facility enviromental status using react & styled-components.
-The Github project is:
-https://github.com/jason-cornish/myco-tex-dashboard.
+  The Github project is:
+  https://github.com/jason-cornish/myco-tex-dashboard.
 
 - **myco-tex-sensors** Scripts to effectively recieve and send temps, humitity, co2 and other enviromental variables using python.
-The Github project is:
-https://github.com/BenjaminDBallard/myco-tex-sensors.
+  The Github project is:
+  https://github.com/BenjaminDBallard/myco-tex-sensors.
 
 > [!TIP]
 >
@@ -38,51 +38,57 @@ https://github.com/BenjaminDBallard/myco-tex-sensors.
 > DBUSERNAME=your database username
 > PASSWORD=your database password
 > DATABASE=your database name
+> access_token=your access token
 > ```
-> 
+>
+> Your testing requests will require a header with a key of "x-access token" and the token value returned from the post user endpoint
+>
 > ### Compiles typescript, Initializes DB, & Starts local server
 >
 > ```
 > npm run start
 > ```
-> 
+>
 > ### Run your tests
-> 
+>
 > ```
 > npm run test
 > ```
-> 
+>
 > ### Lints and fixes files
-> 
+>
 > ```
 > npm run lint
 > ```
 
-## Endpoints 
->and example post body
+## Endpoints
 
 Report: (GET Only)
 
 ```
-/api/report/:user_id/:hist     //hist = true or false
+/api/report
 ```
+
 ```
 Returns a json output showing all current ID's needed to navigate API
 ```
+
 Measure: (GET Only)
 
 ```
 /api/measure/:room_id/:hist    //hist = true or false
 ```
+
 ```
 Returns a Json file showing all measurements from all controllers within a room
 ```
+
 User:
 
 ```
->POST /api/user
->GET & PUT /api/user/:user_id
+>POST, GET, & PUT /api/user
 ```
+
 ```
 >POST & PUT req body:
 {
@@ -95,9 +101,10 @@ User:
 Location:
 
 ```
->GET & POST /api/location/:user_id
+>GET & POST /api/location
 >PUT /api/location/:location_id
 ```
+
 ```
 >POST & PUT req body
 {
@@ -111,6 +118,7 @@ Room:
 >GET & POST /api/room/:location_id
 >PUT /api/room/:room_id
 ```
+
 ```
 >POST & PUT req body
 {
@@ -124,6 +132,7 @@ Controller:
 >GET & POST /api/controller/:room_id
 >PUT /api/controller/:controller_id
 ```
+
 ```
 >POST req body
 {
@@ -148,6 +157,7 @@ Probe:
 >GET & POST /api/probe/:controller_id
 >PUT /api/probe/:probe_id
 ```
+
 ```
 >POST req body
 {
@@ -171,6 +181,7 @@ ProbeCo2:
 ```
 /api/probesCo2/:probe_id/:hist     //hist = true or false
 ```
+
 ```
 {
     "probe_co2_measure": "128"
@@ -182,6 +193,7 @@ ProbeHum:
 ```
 /api/probesHum/:probe_id/:hist     //hist = true or false
 ```
+
 ```
 {
     "probe_hum_measure": "130"
@@ -193,6 +205,7 @@ ProbePpm:
 ```
 /api/probesPpm/:probe_id/:hist     //hist = true or false
 ```
+
 ```
 {
     "probe_ppm_measure": "320"
@@ -204,6 +217,7 @@ ProbeTherm:
 ```
 /api/probesTherm/:probe_id/:hist     //hist = true or false
 ```
+
 ```
 {
     "probe_therm_measure": "70"
