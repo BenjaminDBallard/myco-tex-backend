@@ -98,6 +98,7 @@ User:
     "user_pass": "password",
     "user_company_name": "Company"
 }
+
 >LOGIN req body:
 {
     "user_email": "test@test.com",
