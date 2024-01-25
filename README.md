@@ -86,15 +86,22 @@ Returns a Json file showing all measurements from all controllers within a room
 User:
 
 ```
->POST, GET, & PUT /api/user
+>SIGNUP /api/user/signup
+>LOGIN /api/user/login
+> GET, & PUT /api/user
 ```
 
 ```
->POST & PUT req body:
+>SIGNUP & PUT req body:
 {
     "user_email": "test@test.com",
     "user_pass": "password",
     "user_company_name": "Company"
+}
+>LOGIN req body:
+{
+    "user_email": "test@test.com",
+    "user_pass": "password"
 }
 ```
 

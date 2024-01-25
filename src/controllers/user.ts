@@ -1,16 +1,18 @@
 import uniqid from "uniqid";
 import pool from "../connection.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 const con = await pool.getConnection();
 
-export const logUser = async (req: Request, res: Response) => {
+export const signUp = async (req: Request, res: Response) => {
   //Determine if user already exists
   try {
     const findUserQuery = "SELECT * FROM users WHERE user_email = ?;";
-    const userEmail = req.body.user_email;
+    const { user_email, user_pass } = req.body;
+    const hash = await bcrypt.hash(user_pass, 13);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const user: any = await con.query(findUserQuery, userEmail);
+    const user: any = await con.query(findUserQuery, user_email);
     // let userOptions = {user_id: user.}
     // let userArray = new UserArray(user);
 
@@ -20,9 +22,8 @@ export const logUser = async (req: Request, res: Response) => {
       const populateUserQuery =
         "INSERT INTO users (user_id, user_email, user_pass, user_company_name) VALUES ?;";
       const userId = uniqid();
-      const userPass = req.body.user_pass;
       const userCompany = req.body.user_company_name;
-      const populateUserValues = [[userId, userEmail, userPass, userCompany]];
+      const populateUserValues = [[userId, user_email, hash, userCompany]];
       await con.query(populateUserQuery, [populateUserValues]);
 
       //Post new location to user
@@ -46,19 +47,49 @@ export const logUser = async (req: Request, res: Response) => {
 
       return res.status(200).send("user_id: " + userId);
     } else {
-      const accessToken: string | undefined = process.env.access_token;
-      if (!accessToken) return res.status(500).send("Access token not found");
-      const id = user[0][0].user_id;
-      const token = jwt.sign({ id }, accessToken, { expiresIn: 300 });
-      return res.json({
-        auth: true,
-        token: token,
-        user_id: id,
-        status: 200,
-      });
+      return res
+        .status(400)
+        .send("email is already associated with an account");
     }
   } catch (err) {
-    return res.status(500).send(err + "Initialial table population failed");
+    return res.status(500).send(err + "User creation failed");
+  } finally {
+    con.release();
+  }
+};
+
+export const logIn = async (req: Request, res: Response) => {
+  //Determine if user already exists
+  try {
+    const findUserQuery = "SELECT * FROM users WHERE user_email = ?;";
+    const { user_email, user_pass } = req.body;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const user: any = await con.query(findUserQuery, user_email);
+    // let userOptions = {user_id: user.}
+    // let userArray = new UserArray(user);
+
+    //If user does not already exist
+    if (!user[0].length) {
+      return res.status(400).send("Incorrect username or password");
+    }
+    console.log(user[0]);
+    console.log(user[0][0]);
+    const isValid = await bcrypt.compare(user_pass, user[0][0].user_pass);
+    if (!isValid) {
+      return res.status(400).send("Incorrect username or password");
+    }
+    const accessToken: string | undefined = process.env.access_token;
+    if (!accessToken) return res.status(500).send("Access token not found");
+    const id = user[0][0].user_id;
+    const token = jwt.sign({ id }, accessToken, { expiresIn: 300 });
+    return res.json({
+      auth: true,
+      token: token,
+      user_id: id,
+      status: 200,
+    });
+  } catch (err) {
+    return res.status(500).send(err + "Unable to log in");
   } finally {
     con.release();
   }
