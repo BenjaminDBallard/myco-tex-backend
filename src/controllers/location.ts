@@ -3,41 +3,6 @@ import pool from "../connection.js";
 import { Request, Response } from "express";
 const con = await pool.getConnection();
 
-export const getLocation = async (req: Request, res: Response) => {
-  try {
-    //This user id is passed to us by verifyJWT()
-    const jwtUserID = req.params.user_id;
-    //user is only able to get a location under their own user_id via sql query
-    const findLocationQuery = `SELECT location.*
-    FROM users
-    LEFT JOIN location
-      ON users.user_id = location.user_id
-    WHERE users.user_id = ?;`;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const locations: any = await con.query(findLocationQuery, jwtUserID);
-
-    if (locations.length === 0)
-      return res.status(500).send("0 locations available for this user");
-
-    const sqlUserID = locations[0][0].user_id;
-
-    //if user id associated with location is different from user id provided in request, throw error
-    if (sqlUserID !== jwtUserID) {
-      return res
-        .status(401)
-        .send("You do not have permission to view this location");
-    }
-
-    return res.status(200).json(locations[0]);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send(err);
-  } finally {
-    con.release();
-  }
-};
-
 export const logLocation = async (req: Request, res: Response) => {
   try {
     //This user id is passed to us by verifyJWT()
@@ -111,3 +76,38 @@ export const updateLocation = async (req: Request, res: Response) => {
     con.release();
   }
 };
+
+// export const getLocation = async (req: Request, res: Response) => {
+//   try {
+//     //This user id is passed to us by verifyJWT()
+//     const jwtUserID = req.params.user_id;
+//     //user is only able to get a location under their own user_id via sql query
+//     const findLocationQuery = `SELECT location.*
+//     FROM users
+//     LEFT JOIN location
+//       ON users.user_id = location.user_id
+//     WHERE users.user_id = ?;`;
+
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     const locations: any = await con.query(findLocationQuery, jwtUserID);
+
+//     if (locations.length === 0)
+//       return res.status(500).send("0 locations available for this user");
+
+//     const sqlUserID = locations[0][0].user_id;
+
+//     //if user id associated with location is different from user id provided in request, throw error
+//     if (sqlUserID !== jwtUserID) {
+//       return res
+//         .status(401)
+//         .send("You do not have permission to view this location");
+//     }
+
+//     return res.status(200).json(locations[0]);
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).send(err);
+//   } finally {
+//     con.release();
+//   }
+// };

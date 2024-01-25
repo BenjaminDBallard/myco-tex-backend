@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const formatReport = (tabData: any) => {
   const formatedData: UserReport[] = convertReportToTreeArray(tabData);
   return formatedData;
@@ -13,6 +14,7 @@ interface ProbeReport {
 
 interface ControllerReport {
   controller_id: string;
+  controller_name: string;
   controller_serial: string;
   controller_make: string;
   controller_model: string;
@@ -43,6 +45,7 @@ interface UserReport {
   locations: LocationReport[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function convertReportToTreeArray(data: any[]): UserReport[] {
   const tree: UserReport[] = [];
 
@@ -60,6 +63,7 @@ function convertReportToTreeArray(data: any[]): UserReport[] {
       room_title,
       room_created_at,
       controller_id,
+      controller_name,
       controller_serial,
       controller_make,
       controller_model,
@@ -122,6 +126,7 @@ function convertReportToTreeArray(data: any[]): UserReport[] {
     if (!controllerNode) {
       controllerNode = {
         controller_id,
+        controller_name,
         controller_serial,
         controller_make,
         controller_model,

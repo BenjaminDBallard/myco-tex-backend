@@ -10,6 +10,7 @@ import { measureQueryCurrent } from "../query/measureQueryCurrent.js";
 
 console.log("!!!!!! new ID !!!!!!!");
 console.log(uniqid());
+console.log("!!!!!!!!!!!!!!!!!!!!!");
 
 export const getMeasure = async (req: Request, res: Response) => {
   const historical = req.params.hist;

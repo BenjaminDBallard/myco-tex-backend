@@ -72,8 +72,6 @@ export const logIn = async (req: Request, res: Response) => {
     if (!user[0].length) {
       return res.status(400).send("Incorrect username or password");
     }
-    console.log(user[0]);
-    console.log(user[0][0]);
     const isValid = await bcrypt.compare(user_pass, user[0][0].user_pass);
     if (!isValid) {
       return res.status(400).send("Incorrect username or password");

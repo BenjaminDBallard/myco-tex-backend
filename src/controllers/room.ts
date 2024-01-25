@@ -3,43 +3,6 @@ import pool from "../connection.js";
 import { Request, Response } from "express";
 const con = await pool.getConnection();
 
-export const getRoom = async (req: Request, res: Response) => {
-  try {
-    //This user id is passed to us by verifyJWT()
-    const jwtUserID = req.params.user_id;
-    const findRoomsQuery = `SELECT users.user_id, room.*
-    FROM users
-    LEFT JOIN location
-      ON users.user_id = location.user_id
-    LEFT JOIN room
-      ON location.location_id = room.location_id
-    WHERE location.location_id = ?`;
-
-    const location_id = req.params.location_id;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rooms: any = await con.query(findRoomsQuery, location_id);
-
-    if (rooms[0].length === 0)
-      return res.status(500).send("0 rooms available for this location");
-
-    const sqlUserID = rooms[0][0].user_id;
-
-    //if user id associated with location is different from user id provided in request, throw error
-    if (sqlUserID !== jwtUserID) {
-      return res
-        .status(401)
-        .send("You do not have permission to view the rooms in this location");
-    }
-
-    return res.status(200).json(rooms[0]);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send(err);
-  } finally {
-    con.release();
-  }
-};
-
 export const logRoom = async (req: Request, res: Response) => {
   try {
     //This user id is passed to us by verifyJWT()
@@ -147,3 +110,40 @@ export const updateRoom = async (req: Request, res: Response) => {
     con.release();
   }
 };
+
+// export const getRoom = async (req: Request, res: Response) => {
+//   try {
+//     //This user id is passed to us by verifyJWT()
+//     const jwtUserID = req.params.user_id;
+//     const findRoomsQuery = `SELECT users.user_id, room.*
+//     FROM users
+//     LEFT JOIN location
+//       ON users.user_id = location.user_id
+//     LEFT JOIN room
+//       ON location.location_id = room.location_id
+//     WHERE location.location_id = ?`;
+
+//     const location_id = req.params.location_id;
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     const rooms: any = await con.query(findRoomsQuery, location_id);
+
+//     if (rooms[0].length === 0)
+//       return res.status(500).send("0 rooms available for this location");
+
+//     const sqlUserID = rooms[0][0].user_id;
+
+//     //if user id associated with location is different from user id provided in request, throw error
+//     if (sqlUserID !== jwtUserID) {
+//       return res
+//         .status(401)
+//         .send("You do not have permission to view the rooms in this location");
+//     }
+
+//     return res.status(200).json(rooms[0]);
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).send(err);
+//   } finally {
+//     con.release();
+//   }
+// };

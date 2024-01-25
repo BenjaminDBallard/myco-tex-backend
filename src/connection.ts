@@ -50,6 +50,13 @@ async function initializeDatabase() {
           user_created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );`,
 
+    `CREATE TABLE IF NOT EXISTS device (
+      device_id VARCHAR(100) NOT NULL PRIMARY KEY,
+      device_controller_id VARCHAR(100) NOT NULL,
+      device_pass VARCHAR(100) NOT NULL,
+      device_created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );`,
+
     `CREATE TABLE IF NOT EXISTS location (
           user_id VARCHAR(100) NOT NULL,
           location_id VARCHAR(100) NOT NULL PRIMARY KEY,
@@ -69,6 +76,7 @@ async function initializeDatabase() {
     `CREATE TABLE IF NOT EXISTS controller (
           room_id VARCHAR(100) NOT NULL,
           controller_id VARCHAR(100) NOT NULL PRIMARY KEY,
+          controller_name VARCHAR(50),
           controller_serial VARCHAR(50),
           controller_make VARCHAR(50),
           controller_model VARCHAR(50),

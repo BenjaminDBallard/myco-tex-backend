@@ -63,43 +63,35 @@ Current work is focused on establishing a monitoring system and database for tem
 
 ## Endpoints
 
-Report: (GET Only)
+Report:
 
 ```
-/api/report
+>GET /api/report //Returns a json output showing all current ID's needed to navigate API
 ```
 
-```
-Returns a json output showing all current ID's needed to navigate API
-```
-
-Measure: (GET Only)
+Measure: //hist = true or false
 
 ```
-/api/measure/:room_id/:hist    //hist = true or false
-```
-
-```
-Returns a Json file showing all measurements from all controllers within a room
+>GET /api/measure/:room_id/:hist    //Returns a Json file showing all measurements from all controllers within a room
 ```
 
 User:
 
 ```
->SIGNUP /api/user/signup
->LOGIN /api/user/login
-> GET, & PUT /api/user
+>POST /api/user/signup    //Signs user up and populates a location and standard rooms
+>POST /api/user/login     //Verifies user and returns JWT
+>PUT /api/user/update     //Update user email, pass, and/or company name
 ```
 
 ```
->SIGNUP & PUT req body:
+>POST & PUT req body:
 {
     "user_email": "test@test.com",
     "user_pass": "password",
     "user_company_name": "Company"
 }
 
->LOGIN req body:
+>POST req body:
 {
     "user_email": "test@test.com",
     "user_pass": "password"
@@ -109,8 +101,8 @@ User:
 Location:
 
 ```
->GET & POST /api/location
->PUT /api/location/:location_id
+>POST /api/location/new                   //Add new location to user
+>PUT /api/location/update/:location_id    //Update location title
 ```
 
 ```
@@ -123,8 +115,8 @@ Location:
 Room:
 
 ```
->GET & POST /api/room/:location_id
->PUT /api/room/:room_id
+>POST /api/room/new/:location_id    //Add new room to location
+>PUT /api/room/update/:room_id         //Update room title
 ```
 
 ```
@@ -134,60 +126,44 @@ Room:
 }
 ```
 
-Controller:
+Device:
 
 ```
->GET & POST /api/controller/:room_id
->PUT /api/controller/:controller_id
+>POST /api/device/new/:room_id    //Adds new device (controller, probe, and deviceAuth)
 ```
 
 ```
 >POST req body
 {
-    "controller_id": "1",
+    "controller_id": "12345990011",
+    "device_pass": "password123",
+    "controller_name": "northwall",
     "controller_serial": "1234qwer5678",
     "controller_make": "espressif",
-    "controller_model": "esp32-wroom-32u"
-}
-
->PUT req body
-{
-    "room_id": "d3j0b6or6lrmshr0j",
-    "controller_serial": "1234qwer56784@",
-    "controller_make": "espressif4@",
-    "controller_model": "esp32-wroom-324u@"
-}
-```
-
-Probe:
-
-```
->GET & POST /api/probe/:controller_id
->PUT /api/probe/:probe_id
-```
-
-```
->POST req body
-{
-    "probe_id": "1",
+    "controller_model": "esp32-wroom-32u",
+    "probe_id": "1122334455",
     "probe_make": "makeofprobe",
     "probe_model": "probemodel",
     "probe_type": "therm"
 }
+```
 
+```
+>PUT /api/device/update/:controller_id    //Update device name and/or move device to different room
+```
+
+```
 >PUT req body
 {
-    "controller_id": "d3j0b6a90lrk32laj3",
-    "probe_make": "makeofpfobe@@",
-    "probe_model": "probemofdel@@",
-    "probe_type": "therm"
+    "room_id": "d3j0b6or6lrmshr0j",
+    "controller_name": "northwall"
 }
 ```
 
-ProbeCo2:
+ProbeCo2: //hist = true or false
 
 ```
-/api/probesCo2/:probe_id/:hist     //hist = true or false
+>GET /api/probesCo2/:probe_id/:hist     //Get historical or current device measurement
 ```
 
 ```
@@ -196,10 +172,10 @@ ProbeCo2:
 }
 ```
 
-ProbeHum:
+ProbeHum: //hist = true or false
 
 ```
-/api/probesHum/:probe_id/:hist     //hist = true or false
+/api/probesHum/:probe_id/:hist     //Get historical or current device measurement
 ```
 
 ```
@@ -208,10 +184,10 @@ ProbeHum:
 }
 ```
 
-ProbePpm:
+ProbePpm: //hist = true or false
 
 ```
-/api/probesPpm/:probe_id/:hist     //hist = true or false
+/api/probesPpm/:probe_id/:hist     //Get historical or current device measurement
 ```
 
 ```
@@ -220,10 +196,10 @@ ProbePpm:
 }
 ```
 
-ProbeTherm:
+ProbeTherm: //hist = true or false
 
 ```
-/api/probesTherm/:probe_id/:hist     //hist = true or false
+/api/probesTherm/:probe_id/:hist     //Get historical or current device measurement
 ```
 
 ```

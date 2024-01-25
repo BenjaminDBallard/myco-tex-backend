@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const formatMeasure = (tabData: any) => {
   const formatedData: User[] = convertMeasureToTreeArray(tabData);
   return formatedData;
@@ -20,6 +21,7 @@ interface Probe {
 interface Controller {
   controller_id: string;
   controller_serial: string;
+  controller_name: string;
   controller_make: string;
   controller_model: string;
   controller_created_at: string;
@@ -46,6 +48,7 @@ interface User {
   locations: Location[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function convertMeasureToTreeArray(data: any[]): User[] {
   const tree: User[] = [];
 
@@ -60,6 +63,7 @@ function convertMeasureToTreeArray(data: any[]): User[] {
       room_title,
       room_created_at,
       controller_id,
+      controller_name,
       controller_serial,
       controller_make,
       controller_model,
@@ -122,6 +126,7 @@ function convertMeasureToTreeArray(data: any[]): User[] {
     if (!controllerNode) {
       controllerNode = {
         controller_id,
+        controller_name,
         controller_serial,
         controller_make,
         controller_model,

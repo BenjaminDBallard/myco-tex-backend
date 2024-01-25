@@ -11,6 +11,7 @@ export const reportQuery = `SELECT
   room.room_title,
   room.room_created_at,
   controller.controller_id,
+  controller.controller_name,
   controller.controller_serial,
   controller.controller_make,
   controller.controller_model,
