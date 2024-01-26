@@ -160,50 +160,62 @@ Device:
 }
 ```
 
-ProbeCo2: //hist = true or false
+Co2: //hist = true or false
 
 ```
->GET /api/probesCo2/:probe_id/:hist     //Get historical or current device measurement
+>GET /api/co2/:probe_id/:hist     //Get historical or current device measurement
+>GET /api/co2/new/:probe_id       //Post new device measurement
 ```
 
 ```
 {
-    "probe_co2_measure": "128"
+    "controller_id": "12345",
+    "device_pass": "password123",
+    "probe_co2_measure": "146"
 }
 ```
 
-ProbeHum: //hist = true or false
+Humidity: //hist = true or false
 
 ```
-/api/probesHum/:probe_id/:hist     //Get historical or current device measurement
+/api/hum/:probe_id/:hist     //Get historical or current device measurement
+/api/hum/new/:probe_id       //Post new device measurement
 ```
 
 ```
 {
+    "controller_id": "12345",
+    "device_pass": "password123",
     "probe_hum_measure": "130"
 }
 ```
 
-ProbePpm: //hist = true or false
+PartsPerMillion: //hist = true or false
 
 ```
-/api/probesPpm/:probe_id/:hist     //Get historical or current device measurement
+/api/ppm/:probe_id/:hist     //Get historical or current device measurement
+/api/ppm/new/:probe_id       //Post new device measurement
 ```
 
 ```
 {
+    "controller_id": "12345",
+    "device_pass": "password123",
     "probe_ppm_measure": "320"
 }
 ```
 
-ProbeTherm: //hist = true or false
+Temperature: //hist = true or false
 
 ```
-/api/probesTherm/:probe_id/:hist     //Get historical or current device measurement
+/api/temp/:probe_id/:hist     //Get historical or current device measurement
+/api/temp/new/:probe_id       //Post new device measurement
 ```
 
 ```
 {
+    "controller_id": "12345",
+    "device_pass": "password123",
     "probe_therm_measure": "70"
 }
 ```

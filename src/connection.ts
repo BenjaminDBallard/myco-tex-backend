@@ -29,7 +29,7 @@ async function initializeDatabase() {
 
   // const dropTableStatements = [
   //   `DROP TABLE IF EXISTS probe_co2, probe_therm, probe_ppm, probe_hum;`,
-  //   `DROP TABLE IF EXISTS  probe, controller, room, location, users;`,
+  //   `DROP TABLE IF EXISTS  probe, controller, room, location, device, users;`,
   // ];
   // try {
   //   console.log("[MySQL] Deleting tables...");

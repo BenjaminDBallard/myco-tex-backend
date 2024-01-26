@@ -34,10 +34,10 @@ app.use("/api/room", roomRouter);
 app.use("/api/device", deviceRouter);
 // app.use("/api/controller", controllerRouter);
 // app.use("/api/probe", probeRouter);
-app.use("/api/probesCo2", probeCo2Router);
-app.use("/api/probesHum", probeHumRouter);
-app.use("/api/probesPpm", probePpmRouter);
-app.use("/api/probesTherm", probeThermRouter);
+app.use("/api/co2", probeCo2Router);
+app.use("/api/hum", probeHumRouter);
+app.use("/api/ppm", probePpmRouter);
+app.use("/api/temp", probeThermRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
