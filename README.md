@@ -48,7 +48,6 @@ Current work is focused on establishing a monitoring system and database for tem
 
 **Final**
 - [ ] DEPLOY to Digital Ocean droplets
-- [ ] Test live ESP32
 
 <br/>
 <hr/>
