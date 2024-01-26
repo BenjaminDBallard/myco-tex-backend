@@ -32,6 +32,7 @@ Current work is focused on establishing a monitoring system and database for tem
 <hr/>
 
 ## Development
+**Main**
 - [x] Initialize DB
 - [x] Complete core routers & controllers
 - [x] Ensure response outputs are formated
@@ -41,8 +42,12 @@ Current work is focused on establishing a monitoring system and database for tem
 - [x] Add new table, routers, and controllers for ESP authorization
 - [ ] set up hot reload to restart server on crash
 - [ ] Set up JWT token refresh.
+
+**Quality Assurance**
 - [ ] Review error handling. (Some GET request and multi-insert errors slip through the cracks)
-- [ ] Ensure and test optional params are actually optional
+- [ ] Test and ensure optional params are actually optional
+
+**Final**
 - [ ] DEPLOY to Digital Ocean droplets
 - [ ] Test live ESP32
 
