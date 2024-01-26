@@ -40,8 +40,7 @@ Current work is focused on establishing a monitoring system and database for tem
 - [x] Establish historical and current parameters for GET requests
 - [x] Add JWT and bcrypt to routers and controllers for authorization
 - [x] Add new table, routers, and controllers for ESP authorization
-- [ ] set up hot reload to restart server on crash
-- [ ] Set up JWT token refresh.
+- [ ] Set up JWT token refresh
 
 **Quality Assurance**
 - [ ] Review error handling. (Some GET request and multi-insert errors slip through the cracks)
