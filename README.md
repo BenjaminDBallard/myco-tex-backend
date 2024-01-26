@@ -19,7 +19,7 @@ Current work is focused on establishing a monitoring system and database for tem
 
 ## Related Projects/Modules
 
-**myco-tex-backend** (This project) (https://github.com/BenjaminDBallard/myco-tex-backend).  
+**myco-tex-backend** (https://github.com/BenjaminDBallard/myco-tex-backend) (This project)    
 - Serves up REST endpoints for dashboard application using express, node, & mysql2. Authorization and security for the API use JWT and Bcrypt.
 
 **myco-tex-dashboard** (https://github.com/jason-cornish/myco-tex-dashboard)  
