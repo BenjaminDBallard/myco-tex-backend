@@ -1,31 +1,56 @@
-# myco-tex-backend
+<hr/>
 
+# MycoTex backend
+
+
+## Summary
 This project is the core server-side code for
 [Myco-tex](url tbd).
-This site provides:
+This website provides:
 
-- Static pages for main site (react)
+- Static React pages for main site
 - Node.js application server
 - REST endpoints for the main web site
 
 Current work is focused on establishing a monitoring system and database for temps, co2, and other enviromental metrics.
 
+<br/>
+<hr/>
+
 ## Related Projects/Modules
 
-- **myco-tex-backend** This project. Serves up REST
-  endpoints for dashboard application using express, node, & mysql2.
+**myco-tex-backend** (This project) (https://github.com/BenjaminDBallard/myco-tex-backend).  
+- Serves up REST endpoints for dashboard application using express, node, & mysql2. Authorization and security for the API use JWT and Bcrypt.
 
-- **myco-tex-dashboard** This is the main dashboard application used for monitoring facility enviromental status using react & styled-components.
-  The Github project is:
-  https://github.com/jason-cornish/myco-tex-dashboard.
+**myco-tex-dashboard** (https://github.com/jason-cornish/myco-tex-dashboard)  
+- This is the main dashboard application used for monitoring facility enviromental status with React & Styled-Components.
 
-- **myco-tex-sensors** Scripts to effectively recieve and send temps, humitity, co2 and other enviromental variables using python.
-  The Github project is:
-  https://github.com/BenjaminDBallard/myco-tex-sensors.
+**myco-tex-sensors** (https://github.com/BenjaminDBallard/myco-tex-sensors)  
+- Contains scripts to effectively recieve and send temps, humitity, co2 and other enviromental variables using C++ with the Arduino IDE.
 
+<br/>
+<hr/>
+
+## Development
+- [x] Initialize DB
+- [x] Complete core routers & controllers
+- [x] Ensure response outputs are formated
+- [x] Ensure unique ID's populate
+- [x] Establish historical and current parameters for GET requests
+- [x] Add JWT and bcrypt to routers and controllers for authorization
+- [x] Add new table, routers, and controllers for ESP authorization
+- [ ] set up hot reload to restart server on crash
+- [ ] Set up JWT token refresh.
+- [ ] Review error handling. (Some GET request and multi-insert errors slip through the cracks)
+- [ ] Ensure and test optional params are actually optional
+- [ ] DEPLOY to Digital Ocean droplets
+- [ ] Test live ESP32
+
+<br/>
+<hr/>
+
+# Project Setup
 > [!TIP]
->
-> ## Project setup
 >
 > ```
 > npm install
@@ -61,79 +86,152 @@ Current work is focused on establishing a monitoring system and database for tem
 > npm run lint
 > ```
 
-## Endpoints
+<br/>
+<hr/>
 
-Report:
+# Endpoints
 
-```
->GET /api/report //Returns a json output showing all current ID's needed to navigate API
-```
+## Report:
 
-Measure: //hist = true or false
+| Request | Endpoint | Description |
+| ----:|:------------------------:|:----------------------------------------------------------|
+| GET  | `/api/report`    | Returns a json output showing all current ID's needed to navigate API |  
 
-```
->GET /api/measure/:room_id/:hist    //Returns a Json file showing all measurements from all controllers within a room
-```
+<br/>
+<hr/>
 
-User:
+## Measure:
+>:/hist = (true or false) determines whether you recieve the single current value or all historical values
 
-```
->POST /api/user/signup    //Signs user up and populates a location and standard rooms
->POST /api/user/login     //Verifies user and returns JWT
->PUT /api/user/update     //Update user email, pass, and/or company name
-```
+| Request | Endpoint | Description |
+| ----:|:------------------------:|:----------------------------------------------------------|
+| GET |  `/api/measure/:room_id/:hist`  | Returns a Json file showing all measurements from all controllers within a room |  
 
+<br/>
+<hr/>
+
+## User:
+
+**Endpoints**
+
+| Request | Endpoint | Parameters | Description |  
+| ----:|:------------------------:|:---------------------:|:-------------------------------------|  
+| POST |    `/api/user/signup`    | user_email <br/> user_pass <br/> user_company_name | Signs user up and populates a location and standard rooms |  
+| POST |    `/api/user/login`     | user_email <br/> user_pass | Verifies user and returns JWT |  
+| PUT  |    `/api/user/update`    | user_email <br/> user_pass <br/> user_company_name | Update user email, pass, and/or company name |
+
+<br/>
+
+**Parameter Info**  
+
+| Name | Required | Type | Description |  
+| ----:|:--------:|:------:|:----------------------------------------------------|  
+| user_email | yes | string | The email of the user |  
+| user_pass | yes | string | The password of the user |  
+| user_company_name | optional | string <br/> null | The company of the user |  
+
+<br/>
+
+**Example Request Body**
 ```
->POST & PUT req body:
 {
     "user_email": "test@test.com",
     "user_pass": "password",
     "user_company_name": "Company"
 }
+```
 
->POST req body:
+<br/>
+<hr/>
+
+## Location:
+
+**Endpoints**
+
+| Request | Endpoint | Parameters | Description |  
+| ----:|:------------------------:|:---------------------:|:-------------------------------------|  
+| POST | `/api/location/new` | location_title | Add new location to user |
+| PUT | `/api/location/update/:location_id` | location_title | Update location title |
+
+<br/>
+
+**Parameter Info**  
+
+| Name | Required | Type | Description |  
+| ----:|:--------:|:------:|:----------------------------------------------------|  
+| location_title | optional | string <br/> null | Prefered name of the lab |
+
+<br/>
+
+**Example Request Body**
+```
 {
-    "user_email": "test@test.com",
-    "user_pass": "password"
+    "location_title": "Incubation",
 }
 ```
 
-Location:
+<br/>
+<hr/>
 
-```
->POST /api/location/new                   //Add new location to user
->PUT /api/location/update/:location_id    //Update location title
-```
+## Room:
 
+**Endpoints**
+
+| Request | Endpoint | Parameters | Description |  
+| ----:|:------------------------:|:---------------------:|:-------------------------------------|  
+| POST | `/api/room/new/:location_id` | room_title | Add new room to location |  
+| PUT | `/api/room/update/:room_id` | room_title | Update room title |  
+
+<br/>
+
+**Parameter Info**  
+
+| Name | Required | Type | Description |  
+| ----:|:--------:|:------:|:----------------------------------------------------|  
+| room_title | optional | string <br/> null | Prefered name of the room |  
+
+<br/>
+
+**Example Request Body**
 ```
->POST & PUT req body
 {
-    "location_title": "mycoLab"
+    "room_title": "North Wall",
 }
 ```
 
-Room:
+<br/>
+<hr/>
 
-```
->POST /api/room/new/:location_id    //Add new room to location
->PUT /api/room/update/:room_id         //Update room title
-```
+## Device:
 
-```
->POST & PUT req body
-{
-    "room_title": "incubation"
-}
-```
+**Endpoints**
 
-Device:
+| Request | Endpoint | Parameters | Description |  
+| ----:|:------------------------:|:---------------------:|:-------------------------------------| 
+| POST | `/api/device/new/:room_id` | controller_id <br/> device_pass <br/> controller_name <br/> controller_serial <br/> controller_make <br/> controller_model <br/> probe_id <br/> probe_make <br/> probe_model <br/> probe_type | Adds new device (multi-inserts into controller, probe, and device tables) |  
+| PUT | `/api/device/update/:controller_id` | room_id <br/> controller_name | Update device name and/or move device to different room
 
-```
->POST /api/device/new/:room_id    //Adds new device (controller, probe, and deviceAuth)
-```
+<br/>
 
+**Parameter Info**  
+
+| Name | Required | Type | Description |  
+| ----:|:--------:|:------:|:----------------------------------------------------|  
+| controller_id | yes | string | ID of the device (supplied with controller on delivery) |
+| device_pass | yes | string | Password of the device (supplied with controller) |
+| controller_name | optional | string | Prefered name of device |
+| controller_serial | optional | string | Serial number of the ESP32 |
+| controller_make |  optional | string | Make of ESP32 (Arduino, Esspressif, ect) |
+| controller_model | optional | string | Model of ESP32 (devkit esp32-wroom-32u) |
+| probe_id | yes | string | ID of probe/reader/thermostat (supplied with controller on delivery) |  
+| probe_make | optional | string | Make/Brand of probe/reader/thermostat (BOJACK, Weewooday, ect) |  
+| probe_model | optional | string | Model of ESP32 (DS18B20, DHT11, DHT22, ect) |
+| probe_type | optional | string | Type of probe (therm, co2, ppm, hum)
+
+<br/>
+
+**Example Request Body**
 ```
->POST req body
 {
     "controller_id": "12345990011",
     "device_pass": "password123",
@@ -148,74 +246,47 @@ Device:
 }
 ```
 
-```
->PUT /api/device/update/:controller_id    //Update device name and/or move device to different room
-```
+<br/>
+<hr/>
 
-```
->PUT req body
-{
-    "room_id": "d3j0b6or6lrmshr0j",
-    "controller_name": "northwall"
-}
-```
+## Measurements: 
 
-Co2: //hist = true or false
+>:/hist = (true or false) determines whether you recieve the single current value or all historical values
 
-```
->GET /api/co2/:probe_id/:hist     //Get historical or current device measurement
->GET /api/co2/new/:probe_id       //Post new device measurement
-```
+**Endpoints**
 
-```
-{
-    "controller_id": "12345",
-    "device_pass": "password123",
-    "probe_co2_measure": "146"
-}
-```
+| Request | Endpoint | Parameters | Description |  
+| ----:|:------------------------:|:---------------------:|:-------------------------------------| 
+| GET | `/api/co2/:probe_id/:hist` | N/A | Get historical or current device measurement |
+| GET | `/api/hum/:probe_id/:hist` | N/A | Get historical or current device measurement |
+| GET | `/api/ppm/:probe_id/:hist` | N/A | Get historical or current device measurement |
+| GET | `/api/temp/:probe_id/:hist` | N/A | Get historical or current device measurement |
+| POST | `/api/co2/new/:probe_id` | controller_id <br/> device_pass <br/> probe_co2_measure | Post new co2 measurement |
+| POST | `/api/hum/new/:probe_id` | controller_id <br/> device_pass <br/> probe_co2_measure | Post new humidity measurement |
+| POST | `/api/ppm/new/:probe_id` | controller_id <br/> device_pass <br/> probe_co2_measure | Post new ppm measurement |
+| POST | `/api/temp/new/:probe_id` | controller_id <br/> device_pass <br/> probe_co2_measure | Post new temperature measurement |
 
-Humidity: //hist = true or false
+<br/>
 
-```
-/api/hum/:probe_id/:hist     //Get historical or current device measurement
-/api/hum/new/:probe_id       //Post new device measurement
-```
+**Parameter Info**  
 
-```
-{
-    "controller_id": "12345",
-    "device_pass": "password123",
-    "probe_hum_measure": "130"
-}
-```
+| Name | Required | Type | Description |  
+| ----:|:--------:|:------:|:----------------------------------------------------|  
+| controller_id | yes | string | ID of the device (supplied with controller on delivery) |
+| device_pass | yes | string | Password of the device (supplied with controller) |
+| probe_co2_measure | yes | int | Current measurement of co2 probe |
+| probe_hum_measure | yes | int | Current measurement of humidity probe |
+| probe_ppm_measure | yes | int | Current measurement of ppm probe |
+| probe_temp_measure | yes | int | Current measurement of temperature probe |
 
-PartsPerMillion: //hist = true or false
+<br/>
 
-```
-/api/ppm/:probe_id/:hist     //Get historical or current device measurement
-/api/ppm/new/:probe_id       //Post new device measurement
-```
+**Example Request Body**
 
 ```
 {
     "controller_id": "12345",
     "device_pass": "password123",
-    "probe_ppm_measure": "320"
-}
-```
-
-Temperature: //hist = true or false
-
-```
-/api/temp/:probe_id/:hist     //Get historical or current device measurement
-/api/temp/new/:probe_id       //Post new device measurement
-```
-
-```
-{
-    "controller_id": "12345",
-    "device_pass": "password123",
-    "probe_therm_measure": "70"
+    "probe_co2_measure": 146
 }
 ```
