@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import uniqid from "uniqid";
 import pool from "../connection.js";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
+import { SECRET_KEY } from "../middleware/verifyJwt.js";
+
 const con = await pool.getConnection();
 
 export const signUp = async (req: Request, res: Response) => {
@@ -59,37 +62,68 @@ export const signUp = async (req: Request, res: Response) => {
 };
 
 export const logIn = async (req: Request, res: Response) => {
-  //Determine if user already exists
   try {
-    const findUserQuery = "SELECT * FROM users WHERE user_email = ?;";
+    //Determine if user already exists
     const { user_email, user_pass } = req.body;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const user: any = await con.query(findUserQuery, user_email);
-    // let userOptions = {user_id: user.}
-    // let userArray = new UserArray(user);
+    const findUserQuery = "SELECT * FROM users WHERE user_email = ?;";
+    const userArray: any = await con.query(findUserQuery, user_email);
 
-    //If user does not already exist
-    if (!user[0].length) {
+    //If user does not exist (error)
+    if (!userArray[0].length) {
       return res.status(400).send("Incorrect username or password");
     }
-    const isValid = await bcrypt.compare(user_pass, user[0][0].user_pass);
+
+    //If user does exist, verify password
+    const isValid = await bcrypt.compare(user_pass, userArray[0][0].user_pass);
+
+    //If incorrect password (error)
     if (!isValid) {
       return res.status(400).send("Incorrect username or password");
     }
-    const accessToken: string | undefined = process.env.access_token;
-    if (!accessToken) return res.status(500).send("Access token not found");
-    const id = user[0][0].user_id;
-    const token = jwt.sign({ id }, accessToken, { expiresIn: 300 });
-    return res.json({
-      auth: true,
-      token: token,
-      user_id: id,
-      status: 200,
+
+    //If secret SECRET_KEY does not exist (error)
+    if (!SECRET_KEY) return res.status(500).send("Access token not found");
+
+    //If secret SECRET_KEY does exist generate JWT
+    const id: string = userArray[0][0].user_id;
+    const token = jwt.sign({ id }, SECRET_KEY, { expiresIn: "1h" });
+    const refreshToken = jwt.sign({ id }, SECRET_KEY, { expiresIn: "24h" });
+
+    res.cookie("x-refresh-token", refreshToken, {
+      httpOnly: true,
+      sameSite: "strict",
     });
+    res.header("x-access-token", token).send(id);
   } catch (err) {
     return res.status(500).send(err + "Unable to log in");
   } finally {
     con.release();
+  }
+};
+
+export const refreshJWT = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies["x-refresh-token"];
+
+  if (!refreshToken) {
+    return res.status(401).send("Access Denied. No refresh token provided.");
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, SECRET_KEY) as JwtPayload;
+    const token = jwt.sign({ id: decoded.id }, SECRET_KEY, { expiresIn: "1h" });
+    const NewRefreshToken = jwt.sign({ id: decoded.id }, SECRET_KEY, {
+      expiresIn: "24h",
+    });
+
+    res
+      .cookie("x-refresh-token", NewRefreshToken, {
+        httpOnly: true,
+        sameSite: "strict",
+      })
+      .header("x-access-token", token)
+      .send(decoded.id);
+  } catch (error) {
+    return res.status(400).send("Invalid refresh token.");
   }
 };
 
