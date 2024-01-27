@@ -13,11 +13,13 @@ import probeThermRouter from "./routes/probeTherm.js";
 import apiRouter from "./routes/api.js";
 import deviceRouter from "./routes/device.js";
 import { verifyJWT } from "./middleware/verifyJwt.js";
+import cookies from "cookie-parser";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookies());
 
 app.get("/isUserAuth", verifyJWT, (req, res) => {
   res.send("You are authenticated Congrats:");
