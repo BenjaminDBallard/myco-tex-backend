@@ -45,7 +45,7 @@ Current work is focused on establishing a monitoring system and database for tem
 - [x] Establish historical and current parameters for GET requests
 - [x] Add JWT and bcrypt to routers and controllers for authorization
 - [x] Add new table, routers, and controllers for ESP authorization
-- [ ] Set up JWT token refresh
+- [x] Set up JWT token refresh
 
 **Quality Assurance**
 
@@ -131,7 +131,19 @@ Current work is focused on establishing a monitoring system and database for tem
 |    POST | `/api/user/signup`  | user_email <br/> user_pass <br/> user_company_name | Signs user up and populates a location and standard rooms                                                                                                           |
 |    POST |  `/api/user/login`  |             user_email <br/> user_pass             | Verifies user and returns JWT token and refresh token. the token for the client is stored in the res.headers and the refresh token is stored in an httpOnly cookie. |
 |    POST | `/api/user/refresh` |                        N/A                         | verifies that user has a refresh token, and if valid, returns a new token for the client in res.headers                                                             |
-|     PUT | `/api/user/update`  | user_email <br/> user_pass <br/> user_company_name | Update user email, pass, and/or company name                                                                                                                        |
+|     PUT | `/api/user/update`  | user_email <br/> user_pass <br/> user_company_name | Update user email, pass, and/or company name              
+
+<br/>
+
+> [!NOTE]  
+>  
+> The `verifyJWT` middleware automatically refreshes both the x-access-token and the x-refresh-token if the original x-refresh-token is still valid.  
+>  
+> For any other use case there is a dedicated endpoint to refresh: `/api/user/refresh` which also refreshes both tokens.  
+>  
+> **Current token duration is as follows:**  
+> x-access-token: 1 hour  
+> x-refresh-token: 24 hours  
 
 <br/>
 
