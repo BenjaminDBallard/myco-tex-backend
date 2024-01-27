@@ -103,9 +103,9 @@ export const postDevice = async (req: Request, res: Response) => {
           //hash and salt device_pass
           const deviceHash = await bcrypt.hash(req.body.device_pass, 13);
           const populateDeviceQuery =
-            "INSERT INTO device (device_id, device_controller_id, device_pass) VALUES ?;";
+            "INSERT INTO device (user_id, device_id, device_controller_id, device_pass) VALUES ?;";
           const populateDeviceValues = [
-            [uniqid(), req.body.controller_id, deviceHash],
+            [sqlUserID, uniqid(), req.body.controller_id, deviceHash],
           ];
           await con.query(populateDeviceQuery, [populateDeviceValues]);
 

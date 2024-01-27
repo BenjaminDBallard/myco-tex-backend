@@ -51,10 +51,12 @@ async function initializeDatabase() {
       );`,
 
     `CREATE TABLE IF NOT EXISTS device (
+      user_id VARCHAR(100) NOT NULL,
       device_id VARCHAR(100) NOT NULL PRIMARY KEY,
       device_controller_id VARCHAR(100) NOT NULL,
       device_pass VARCHAR(100) NOT NULL,
-      device_created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      device_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(user_id) REFERENCES users(user_id)
     );`,
 
     `CREATE TABLE IF NOT EXISTS location (
