@@ -46,11 +46,13 @@ Current work is focused on establishing a monitoring system and database for tem
 - [x] Add JWT and bcrypt to routers and controllers for authorization
 - [x] Add new table, routers, and controllers for ESP authorization
 - [x] Set up JWT token refresh
+- [ ] "From" and "To" time stamp sorting on measurements & probe_type enpoints
 
 **Quality Assurance**
 
-- [ ] Review error handling. (Some GET request and multi-insert errors slip through the cracks)
-- [ ] Test and ensure optional params are actually optional
+- [x] Review error handling.
+- [x] Test and ensure optional params are actually optional
+- [x] Ensure err messages are uniform
 
 **Final**
 
@@ -126,34 +128,37 @@ Current work is focused on establishing a monitoring system and database for tem
 
 **Endpoints**
 
-| Request |      Endpoint       |                     Parameters                     | Description                                                                                                                                                         |
-| ------: | :-----------------: | :------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-|    POST | `/api/user/signup`  | user_email <br/> user_pass <br/> user_company_name | Signs user up and populates a location and standard rooms                                                                                                           |
-|    POST |  `/api/user/login`  |             user_email <br/> user_pass             | Verifies user and returns JWT token and refresh token. the token for the client is stored in the res.headers and the refresh token is stored in an httpOnly cookie. |
-|    POST | `/api/user/refresh` |                        N/A                         | verifies that user has a refresh token, and if valid, returns a new token for the client in res.headers                                                             |
-|     PUT | `/api/user/update`  | user_email <br/> user_pass <br/> user_company_name | Update user email, pass, and/or company name              
+| Request |      Endpoint       |                                   Parameters                                   | Description                                                                                                                                                         |
+| ------: | :-----------------: | :----------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|    POST | `/api/user/signup`  |               user_email <br/> user_pass <br/> user_company_name               | Signs user up and populates a location and standard rooms                                                                                                           |
+|    POST |  `/api/user/login`  |                           user_email <br/> user_pass                           | Verifies user and returns JWT token and refresh token. the token for the client is stored in the res.headers and the refresh token is stored in an httpOnly cookie. |
+|    POST | `/api/user/refresh` |                                      N/A                                       | verifies that user has a refresh token, and if valid, returns a new token for the client in res.headers                                                             |
+|     PUT | `/api/user/update`  | new_user_email <br/> new_user_pass <br/> new_user_company_name <br/> user_pass | Update user email, pass, and/or company name                                                                                                                        |
 
 <br/>
 
-> [!NOTE]  
->  
-> The `verifyJWT` middleware automatically refreshes both the x-access-token and the x-refresh-token if the original x-refresh-token is still valid.  
->  
-> For any other use case there is a dedicated endpoint to refresh: `/api/user/refresh` which also refreshes both tokens.  
->  
+> [!NOTE]
+>
+> The `verifyJWT` middleware automatically refreshes both the x-access-token and the x-refresh-token if the original x-refresh-token is still valid.
+>
+> For any other use case there is a dedicated endpoint to refresh: `/api/user/refresh` which also refreshes both tokens.
+>
 > **Current token duration is as follows:**  
 > x-access-token: 1 hour  
-> x-refresh-token: 24 hours  
+> x-refresh-token: 24 hours
 
 <br/>
 
 **Parameter Info**
 
-|              Name | Required |       Type        | Description              |
-| ----------------: | :------: | :---------------: | :----------------------- |
-|        user_email |   yes    |      string       | The email of the user    |
-|         user_pass |   yes    |      string       | The password of the user |
-| user_company_name | optional | string <br/> null | The company of the user  |
+|                  Name | Required |       Type        | Description                  |
+| --------------------: | :------: | :---------------: | :--------------------------- |
+|            user_email |   yes    |      string       | The email of the user        |
+|             user_pass |   yes    |      string       | The password of the user     |
+|     user_company_name | optional | string <br/> null | The company of the user      |
+|        new_user_email | optional | string <br/> null | The new email of the user    |
+|         new_user_pass | optional | string <br/> null | The new password of the user |
+| new_user_company_name | optional | string <br/> null | The new company of the user  |
 
 <br/>
 
@@ -185,7 +190,7 @@ Current work is focused on establishing a monitoring system and database for tem
 
 |           Name | Required |       Type        | Description              |
 | -------------: | :------: | :---------------: | :----------------------- |
-| location_title | optional | string <br/> null | Prefered name of the lab |
+| location_title |   yes    | string <br/> null | Prefered name of the lab |
 
 <br/>
 
@@ -213,9 +218,9 @@ Current work is focused on establishing a monitoring system and database for tem
 
 **Parameter Info**
 
-|       Name | Required |       Type        | Description               |
-| ---------: | :------: | :---------------: | :------------------------ |
-| room_title | optional | string <br/> null | Prefered name of the room |
+|       Name | Required |  Type  | Description               |
+| ---------: | :------: | :----: | :------------------------ |
+| room_title |   yes    | string | Prefered name of the room |
 
 <br/>
 

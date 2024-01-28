@@ -41,7 +41,7 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
           sameSite: "strict",
         })
         .header("x-access-token", token)
-        .send(decoded.id);
+        .send("Token Expired: New token returned in header");
     } catch (error) {
       return res.status(401).send("Invalid Token. Please Login.");
     }

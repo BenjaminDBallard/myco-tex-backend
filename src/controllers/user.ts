@@ -9,6 +9,9 @@ import { SECRET_KEY } from "../middleware/verifyJwt.js";
 const con = await pool.getConnection();
 
 export const signUp = async (req: Request, res: Response) => {
+  if (!req.body.user_email || !req.body.user_pass) {
+    return res.status(400).send("Missing required params");
+  }
   //Determine if user already exists
   try {
     const findUserQuery = "SELECT * FROM users WHERE user_email = ?;";
@@ -25,7 +28,10 @@ export const signUp = async (req: Request, res: Response) => {
       const populateUserQuery =
         "INSERT INTO users (user_id, user_email, user_pass, user_company_name) VALUES ?;";
       const userId = uniqid();
-      const userCompany = req.body.user_company_name;
+      let userCompany = req.body.user_company_name;
+      if (userCompany === null || userCompany === undefined) {
+        userCompany = "Personal";
+      }
       const populateUserValues = [[userId, user_email, hash, userCompany]];
       await con.query(populateUserQuery, [populateUserValues]);
 
@@ -48,7 +54,7 @@ export const signUp = async (req: Request, res: Response) => {
       ];
       await con.query(populateRoomsQuery, [populateRoomsValues]);
 
-      return res.status(200).send("user_id: " + userId);
+      return res.status(200).send("User created! user_id: " + userId);
     } else {
       return res
         .status(400)
@@ -62,6 +68,9 @@ export const signUp = async (req: Request, res: Response) => {
 };
 
 export const logIn = async (req: Request, res: Response) => {
+  if (!req.body.user_email || !req.body.user_pass) {
+    return res.status(400).send("Missing required params");
+  }
   try {
     //Determine if user already exists
     const { user_email, user_pass } = req.body;
@@ -69,7 +78,7 @@ export const logIn = async (req: Request, res: Response) => {
     const userArray: any = await con.query(findUserQuery, user_email);
 
     //If user does not exist (error)
-    if (!userArray[0].length) {
+    if (!userArray[0].length || userArray[0][0].user_email === null) {
       return res.status(400).send("Incorrect username or password");
     }
 
@@ -93,9 +102,9 @@ export const logIn = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "strict",
     });
-    res.header("x-access-token", token).send(id);
+    res.header("x-access-token", token).send("Logged in! user_id: " + id);
   } catch (err) {
-    return res.status(500).send(err + "Unable to log in");
+    return res.status(500).send("Unable to log in");
   } finally {
     con.release();
   }
@@ -127,63 +136,87 @@ export const refreshJWT = async (req: Request, res: Response) => {
   }
 };
 
-export const getUser = async (req: Request, res: Response) => {
-  const sql = "SELECT * FROM users WHERE user_id = ?;";
-  try {
-    //This user id is passed to us by verifyJWT()
-    const jwtUserID = req.params.user_id;
-    //sql query implicitly only allows users to look at their own user info
-    const formattedSql = con.format(sql, jwtUserID);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const users: any = await con.query(formattedSql);
-
-    if (users.length === 0) return res.status(500).send("user does not exist");
-
-    const sqlUserID = users[0][0].user_id;
-
-    //if user id in db is different from user id provided in request, throw error
-    if (sqlUserID !== jwtUserID) {
-      return res
-        .status(401)
-        .send("You do not have permission to view this user");
-    }
-
-    return res.status(200).json(users[0][0]);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send(err);
-  } finally {
-    con.release();
-  }
-};
-
 export const updateUser = async (req: Request, res: Response) => {
-  const fields = ["user_email", "user_pass", "user_company_name"];
-
+  if (!req.body.user_pass) {
+    return res.status(400).send("Missing required params");
+  }
   //This user id is passed to us by verifyJWT()
   const jwtUserID = req.params.user_id;
+
+  //verify SQL location names
+  const sqlEmailCheck: any = await con.execute(`SELECT user_email FROM users`);
+
+  //verify SQL current user info
+  const sqlCurrentCheck: any = await con.execute(
+    `SELECT * FROM users WHERE user_id = ?`,
+    [jwtUserID]
+  );
+
+  //user authenticated
+  if (sqlCurrentCheck[0].length === 0 || sqlCurrentCheck.user_id === null) {
+    return res.status(400).send("user not authorized");
+  }
+  //Current values
+  const currentEmail = sqlCurrentCheck[0][0].user_email;
+  const currentHashPass = sqlCurrentCheck[0][0].user_pass;
+  const currentPass = req.body.user_pass;
+  const currentCompanyName = sqlCurrentCheck[0][0].user_company_name;
+
+  //New values
+  const newEmail = req.body.new_user_email;
+  const newPass = req.body.new_user_pass;
+  const newCompanyName = req.body.new_user_company_name;
+
+  //final values
+  let email = currentEmail;
+  let pass = currentHashPass;
+  let companyName = currentCompanyName;
+
+  //pass validation
+  const oldPassIsValid = await bcrypt.compare(currentPass, currentHashPass);
+  if (!oldPassIsValid) {
+    return res.status(400).send("Incorrect Password");
+  }
+
+  //validate email change
+  if (newEmail !== undefined && newEmail !== null) {
+    const userEmails = sqlEmailCheck[0].map((item: any) => item.user_email);
+    if (userEmails.includes(newEmail) && newEmail !== currentEmail) {
+      return res
+        .status(400)
+        .send(
+          "A user with this email already exists: " + req.body.new_user_email
+        );
+    }
+    email = newEmail;
+  }
+  //validate password change
+  if (newPass !== undefined && newPass !== null) {
+    pass = await bcrypt.hash(newPass, 13);
+  }
+
+  //validate company change
+  if (newCompanyName !== undefined && newEmail !== null) {
+    companyName = newCompanyName;
+  }
+
+  //set values
+  const values = [email, pass, companyName];
+  const fields = ["user_email", "user_pass", "user_company_name"];
+
   const setClauses = fields.map((field) => `${field} = ?`);
-  const values = fields.map((field) => {
-    const value = req.body[field];
-    return value != null ? value : null; // If value is null or undefined, replace with null
-  });
 
   //sql query implicitly only allows users to edit their own user info
   const sql = `UPDATE users SET ${setClauses.join(", ")} WHERE user_id = ?`;
   values.push(jwtUserID);
-
-  const con = await pool.getConnection();
+  //submit
   try {
     const formattedSql = con.format(sql, values);
-
     const [rows] = await con.query(formattedSql);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tabularRow: any = rows;
 
     if (tabularRow.affectedRows === 0) {
-      return res
-        .status(404)
-        .json({ message: "User not found or unauthorized" });
+      return res.status(404).send("User not found or unauthorized");
     }
 
     // After updating, fetch the updated job data
@@ -191,7 +224,7 @@ export const updateUser = async (req: Request, res: Response) => {
       "SELECT * FROM users WHERE user_id = ?",
       [jwtUserID]
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const tabularData: any = updatedUser;
 
     return res.status(200).json(tabularData); // Assumes the first record is the updated job data
@@ -202,3 +235,33 @@ export const updateUser = async (req: Request, res: Response) => {
     con.release();
   }
 };
+
+// export const getUser = async (req: Request, res: Response) => {
+//   const sql = "SELECT * FROM users WHERE user_id = ?;";
+//   try {
+//     //This user id is passed to us by verifyJWT()
+//     const jwtUserID = req.params.user_id;
+//     //sql query implicitly only allows users to look at their own user info
+//     const formattedSql = con.format(sql, jwtUserID);
+//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//     const users: any = await con.query(formattedSql);
+
+//     if (users.length === 0) return res.status(500).send("user does not exist");
+
+//     const sqlUserID = users[0][0].user_id;
+
+//     //if user id in db is different from user id provided in request, throw error
+//     if (sqlUserID !== jwtUserID) {
+//       return res
+//         .status(401)
+//         .send("You do not have permission to view this user");
+//     }
+
+//     return res.status(200).json(users[0][0]);
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).send(err);
+//   } finally {
+//     con.release();
+//   }
+// };

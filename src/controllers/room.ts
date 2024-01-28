@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import uniqid from "uniqid";
 import pool from "../connection.js";
 import { Request, Response } from "express";
@@ -7,23 +8,41 @@ export const logRoom = async (req: Request, res: Response) => {
   try {
     //This user id is passed to us by verifyJWT()
     const jwtUserID = req.params.user_id;
+    if (!req.params.location_id || !req.body.room_title) {
+      return res.status(400).send("Missing required params");
+    }
     //verify SQL user_id
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sqlUserIDCheck: any = await con.execute(
-      `SELECT users.user_id, location.location_id
+      `SELECT users.user_id, location.location_id, room.room_id, room.room_title
       FROM users
       LEFT JOIN location
         ON users.user_id = location.user_id
+      LEFT JOIN room
+        ON location.location_id = room.location_id
       WHERE location.location_id = ?`,
       [req.params.location_id]
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //If location does not already exist
+    if (sqlUserIDCheck[0].length === 0 || sqlUserIDCheck.location_id === null) {
+      return res.status(400).send("location not found or unauthorized");
+    }
     const sqlUserID: any = sqlUserIDCheck[0][0].user_id;
-    console.log(sqlUserIDCheck);
     //If user making request does not match user in db, throw error
     if (sqlUserID !== jwtUserID) {
-      return res.status(401).send("location not found or unauthorized");
+      return res.status(400).send("location not found or unauthorized");
+    }
+    //If room with same name exists throw error
+    const RoomNamesInLocation = sqlUserIDCheck[0].map(
+      (item: any) => item.room_title
+    );
+    if (RoomNamesInLocation.includes(req.body.room_title)) {
+      return res
+        .status(400)
+        .send(
+          "this location already includes a room with the title: " +
+            req.body.room_title
+        );
     }
     //If user making request does match user in db, begin insert
     const createRoomSql =
@@ -38,7 +57,7 @@ export const logRoom = async (req: Request, res: Response) => {
     ];
     await con.query(createRoomSql, [createRoomValues]);
 
-    return res.status(200).json("Room_id: " + roomId);
+    return res.status(200).send("New room created! Room_id: " + roomId);
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);
@@ -48,14 +67,15 @@ export const logRoom = async (req: Request, res: Response) => {
 };
 
 export const updateRoom = async (req: Request, res: Response) => {
-  const con = await pool.getConnection();
   try {
+    if (!req.params.room_id || !req.body.room_title) {
+      return res.status(400).send("Missing required params");
+    }
     //This user id is passed to us by verifyJWT()
     const jwtUserID = req.params.user_id;
     //verify SQL user_id
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sqlUserIDCheck: any = await con.execute(
-      `SELECT users.user_id, room.room_id
+      `SELECT users.user_id,  location.location_id, room.room_id, room.room_title
       FROM users
       LEFT JOIN location
         ON users.user_id = location.user_id
@@ -66,12 +86,23 @@ export const updateRoom = async (req: Request, res: Response) => {
     );
     if (sqlUserIDCheck[0].length === 0)
       return res.status(500).send("Room not found");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const sqlUserID: any = sqlUserIDCheck[0][0].user_id;
-    console.log(sqlUserIDCheck);
     //If user making request does not match user in db, throw error
     if (sqlUserID !== jwtUserID) {
       return res.status(401).send("Unauthorized");
+    }
+    //If room with same name exists throw error
+    const RoomNamesInLocation = sqlUserIDCheck[0].map(
+      (item: any) => item.room_title
+    );
+    if (RoomNamesInLocation.includes(req.body.room_title)) {
+      return res
+        .status(400)
+        .send(
+          "this location already includes a room with the title: " +
+            req.body.room_title
+        );
     }
     //If user making request does match user in db, begin update
     const fields = ["room_title"];
@@ -86,11 +117,11 @@ export const updateRoom = async (req: Request, res: Response) => {
 
     const formattedSql = con.format(sql, values);
     const [rows] = await con.execute(formattedSql);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const tabularRow: any = rows;
 
     if (tabularRow.affectedRows === 0) {
-      return res.status(404).json({ message: "No changes made" });
+      return res.status(404).send("No changes made");
     }
 
     // After updating, fetch the updated job data
@@ -98,7 +129,7 @@ export const updateRoom = async (req: Request, res: Response) => {
       "SELECT * FROM room WHERE room_id = ?",
       [req.params.room_id]
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const tabularData: any = updatedRoom;
     console.log(updatedRoom);
 
