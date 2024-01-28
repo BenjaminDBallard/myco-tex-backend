@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import uniqid from "uniqid";
 import pool from "../connection.js";
 import { Request, Response } from "express";
@@ -11,7 +12,7 @@ export const getProbeHum = async (req: Request, res: Response) => {
     const historical = req.params.hist;
     let sql;
     if (historical === "true") {
-      sql = `SELECT users.user_id, probe_hum.*
+      sql = `SELECT users.user_id, controller.controller_id, probe_hum.*
       FROM users
       LEFT JOIN location
         ON users.user_id = location.user_id
@@ -25,7 +26,7 @@ export const getProbeHum = async (req: Request, res: Response) => {
         ON probe.probe_id = probe_hum.probe_id
       WHERE probe.probe_id = ? ORDER BY probe_hum_created_at DESC;`;
     } else {
-      sql = `SELECT users.user_id, probe_hum.*
+      sql = `SELECT users.user_id, controller.controller_id, probe_hum.*
       FROM users
       LEFT JOIN location
         ON users.user_id = location.user_id
@@ -41,18 +42,20 @@ export const getProbeHum = async (req: Request, res: Response) => {
     }
 
     const probe_id = req.params.probe_id;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const measurements: any = await con.query(sql, probe_id);
-
-    if (measurements[0].length === 0)
-      return res.status(500).send("0 probes available on this controller");
+    if (measurements[0].length === 0 || measurements[0][0].probe_id === null)
+      return res
+        .status(400)
+        .send(
+          "0 measurements available on this device, or you do not have permission to view the measurements from this device"
+        );
 
     const sqlUserID = measurements[0][0].user_id;
     if (sqlUserID !== jwtUserID) {
       return res
         .status(401)
         .send(
-          "You do not have permission to view the controllers in this room"
+          "You do not have permission to view the measurements from this device"
         );
     }
 
@@ -68,13 +71,22 @@ export const getProbeHum = async (req: Request, res: Response) => {
 export const logProbeHum = async (req: Request, res: Response) => {
   try {
     const { controller_id, device_pass, probe_hum_measure } = req.body;
+    if (!controller_id || !device_pass || !probe_hum_measure) {
+      return res.status(400).send("Missing required params");
+    }
     //verify SQL user_id
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sqlDeviceCheck: any = await con.execute(
       `SELECT *
         FROM device
         WHERE device_controller_id = ?;`,
       [controller_id]
+    );
+
+    const sqlProbeCheck: any = await con.execute(
+      `SELECT *
+            FROM probe
+            WHERE probe_id = ?;`,
+      [req.params.probe_id]
     );
 
     //If user does not already exist
@@ -88,6 +100,10 @@ export const logProbeHum = async (req: Request, res: Response) => {
     if (!isValid) {
       return res.status(400).send("device access denied");
     }
+    //Check if probe exists
+    if (sqlProbeCheck[0].length === 0) {
+      return res.status(400).send("probe does not exist on this device");
+    }
 
     //If device making request does match device in db, begin insert
     const createProbeHumQuery = `
@@ -100,12 +116,11 @@ export const logProbeHum = async (req: Request, res: Response) => {
         `;
 
     const probeHumId = uniqid();
-
     const createProbeHumValues = [
       [
         req.params.probe_id, // Required
-        probeHumId,
-        probe_hum_measure,
+        probeHumId, // Required
+        probe_hum_measure, // Required
       ],
     ];
     await con.query(createProbeHumQuery, [createProbeHumValues]);

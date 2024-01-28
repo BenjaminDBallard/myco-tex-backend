@@ -1,4 +1,4 @@
-import uniqid from "uniqid";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import pool from "../connection.js";
 const con = await pool.getConnection();
 import { measureQuery } from "../query/measureQuery.js";
@@ -7,10 +7,6 @@ import { formatReport } from "../functions/formatReport.js";
 import { formatMeasure } from "../functions/formatMeasure.js";
 import { Request, Response } from "express";
 import { measureQueryCurrent } from "../query/measureQueryCurrent.js";
-
-console.log("!!!!!! new ID !!!!!!!");
-console.log(uniqid());
-console.log("!!!!!!!!!!!!!!!!!!!!!");
 
 export const getMeasure = async (req: Request, res: Response) => {
   const historical = req.params.hist;
@@ -25,7 +21,6 @@ export const getMeasure = async (req: Request, res: Response) => {
     const jwtUserID = req.params.user_id;
     const room_id = req.params.room_id;
     const rows = await con.query(sql, [room_id, room_id, room_id, room_id]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tabularData: any = rows[0];
 
     if (tabularData.length === 0) {
@@ -55,7 +50,6 @@ export const getReport = async (req: Request, res: Response) => {
     const user_id = req.params.user_id;
     // sql query only allows user to view their own report implicitly
     const rows = await con.query(sql, user_id);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const typedData: any = rows[0];
     const treeDataArray = formatReport(typedData);
     const finalReport = treeDataArray[0];

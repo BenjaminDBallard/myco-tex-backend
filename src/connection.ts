@@ -126,7 +126,7 @@ async function initializeDatabase() {
           probe_hum_measure INT(3),
           probe_hum_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY(probe_id) REFERENCES probe(probe_id)
-      )`,
+      );`,
   ];
 
   try {
