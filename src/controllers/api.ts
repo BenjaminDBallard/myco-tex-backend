@@ -27,8 +27,7 @@ export const getMeasure = async (req: Request, res: Response) => {
   } else {
     to = req.params.to;
   }
-  console.log(from);
-  console.log(to);
+
   let values;
   let sql;
   if (historical === "true" && from) {
@@ -51,7 +50,6 @@ export const getMeasure = async (req: Request, res: Response) => {
     sql = measureQueryCurrent;
     values = [room_id, room_id, room_id, room_id];
   }
-  console.log(values);
   try {
     const rows = await con.query(sql, values);
     const tabularData: any = rows[0];

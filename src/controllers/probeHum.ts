@@ -60,7 +60,7 @@ export const getProbeHum = async (req: Request, res: Response) => {
       WHERE probe.probe_id = ? ORDER BY measure_created_at DESC LIMIT 1;`;
       values = [probe_id];
     }
-    console.log(values);
+
     const measurements: any = await con.query(sql, values);
     if (measurements[0].length === 0 || measurements[0][0].probe_id === null)
       return res
