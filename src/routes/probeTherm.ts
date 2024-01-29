@@ -4,7 +4,7 @@ import { verifyJWT } from "../middleware/verifyJwt.js";
 
 const router = Router();
 
-router.get("/:probe_id/:hist", verifyJWT, getProbeTherm);
+router.get("/:probe_id/:hist/:from?/:to?", verifyJWT, getProbeTherm);
 router.post("/new/:probe_id", logProbeTherm);
 
 export default router;

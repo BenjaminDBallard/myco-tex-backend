@@ -99,7 +99,7 @@ async function initializeDatabase() {
     `CREATE TABLE IF NOT EXISTS probe_co2 (
           probe_id VARCHAR(100) NOT NULL,
           probe_co2_id VARCHAR(100) NOT NULL PRIMARY KEY,
-          probe_co2_measure INT(7),
+          probe_co2_measure FLOAT,
           probe_c02_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY(probe_id) REFERENCES probe(probe_id)
       );`,
@@ -107,7 +107,7 @@ async function initializeDatabase() {
     `CREATE TABLE IF NOT EXISTS probe_therm (
           probe_id VARCHAR(100) NOT NULL,
           probe_therm_id VARCHAR(100) NOT NULL PRIMARY KEY,
-          probe_therm_measure INT(3),
+          probe_therm_measure FLOAT,
           probe_therm_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY(probe_id) REFERENCES probe(probe_id)
       );`,
@@ -115,7 +115,7 @@ async function initializeDatabase() {
     `CREATE TABLE IF NOT EXISTS probe_ppm (
           probe_id VARCHAR(100) NOT NULL,
           probe_ppm_id VARCHAR(100) NOT NULL PRIMARY KEY,
-          probe_ppm_measure INT(7),
+          probe_ppm_measure FLOAT,
           probe_ppm_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY(probe_id) REFERENCES probe(probe_id)
       );`,
@@ -123,7 +123,7 @@ async function initializeDatabase() {
     `CREATE TABLE IF NOT EXISTS probe_hum (
           probe_id VARCHAR(100) NOT NULL,
           probe_hum_id VARCHAR(100) NOT NULL PRIMARY KEY,
-          probe_hum_measure INT(3),
+          probe_hum_measure FLOAT,
           probe_hum_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY(probe_id) REFERENCES probe(probe_id)
       );`,

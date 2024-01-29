@@ -9,40 +9,59 @@ export const getProbePpm = async (req: Request, res: Response) => {
   try {
     //This user id is passed to us by verifyJWT()
     const jwtUserID = req.params.user_id;
+    const probe_id = req.params.probe_id;
     const historical = req.params.hist;
-    let sql;
-    if (historical === "true") {
-      sql = `SELECT users.user_id, controller.controller_id, probe_ppm.*
-    FROM users
-    LEFT JOIN location
-      ON users.user_id = location.user_id
-    LEFT JOIN room
-      ON location.location_id = room.location_id
-    LEFT JOIN controller
-      ON room.room_id = controller.room_id
-    LEFT JOIN probe
-      ON controller.controller_id = probe.controller_id
-    LEFT JOIN probe_ppm
-      ON probe.probe_id = probe_ppm.probe_id
-    WHERE probe.probe_id = ? ORDER BY probe_ppm_created_at DESC;`;
+    let from;
+    let to;
+
+    if (req.params.from === undefined || req.params.from === null) {
+      from = "0";
     } else {
-      sql = `SELECT users.user_id, controller.controller_id, probe_ppm.*
-    FROM users
-    LEFT JOIN location
-      ON users.user_id = location.user_id
-    LEFT JOIN room
-      ON location.location_id = room.location_id
-    LEFT JOIN controller
-      ON room.room_id = controller.room_id
-    LEFT JOIN probe
-      ON controller.controller_id = probe.controller_id
-    LEFT JOIN probe_ppm
-      ON probe.probe_id = probe_ppm.probe_id
-    WHERE probe.probe_id = ? ORDER BY probe_ppm_created_at DESC LIMIT 1;`;
+      from = req.params.from;
     }
 
-    const probe_id = req.params.probe_id;
-    const measurements: any = await con.query(sql, probe_id);
+    if (req.params.to === undefined || req.params.to === null) {
+      to = "2147483647";
+    } else {
+      to = req.params.to;
+    }
+
+    let values;
+    let sql;
+    if (historical === "true" && from) {
+      sql = `SELECT users.user_id, controller.controller_id, probe_ppm.probe_id, probe_ppm.probe_ppm_id AS measure_id, probe_ppm.probe_ppm_measure AS measure, UNIX_TIMESTAMP(probe_ppm.probe_ppm_created_at) AS measure_created_at
+    FROM users
+    LEFT JOIN location
+      ON users.user_id = location.user_id
+    LEFT JOIN room
+      ON location.location_id = room.location_id
+    LEFT JOIN controller
+      ON room.room_id = controller.room_id
+    LEFT JOIN probe
+      ON controller.controller_id = probe.controller_id
+    LEFT JOIN probe_ppm
+      ON probe.probe_id = probe_ppm.probe_id
+      WHERE (probe.probe_id = ? AND probe_ppm_created_at BETWEEN FROM_UNIXTIME(?) AND FROM_UNIXTIME(?)) 
+      ORDER BY measure_created_at DESC;`;
+      values = [probe_id, from, to];
+    } else {
+      sql = `SELECT users.user_id, controller.controller_id, probe_ppm.probe_id, probe_ppm.probe_ppm_id AS measure_id, probe_ppm.probe_ppm_measure AS measure, UNIX_TIMESTAMP(probe_ppm.probe_ppm_created_at) AS measure_created_at
+    FROM users
+    LEFT JOIN location
+      ON users.user_id = location.user_id
+    LEFT JOIN room
+      ON location.location_id = room.location_id
+    LEFT JOIN controller
+      ON room.room_id = controller.room_id
+    LEFT JOIN probe
+      ON controller.controller_id = probe.controller_id
+    LEFT JOIN probe_ppm
+      ON probe.probe_id = probe_ppm.probe_id
+    WHERE probe.probe_id = ? ORDER BY measure_created_at DESC LIMIT 1;`;
+      values = [probe_id];
+    }
+
+    const measurements: any = await con.query(sql, values);
 
     if (measurements[0].length === 0 || measurements[0][0].probe_id === null)
       return res

@@ -9,18 +9,51 @@ import { Request, Response } from "express";
 import { measureQueryCurrent } from "../query/measureQueryCurrent.js";
 
 export const getMeasure = async (req: Request, res: Response) => {
+  //This user id is passed to us by verifyJWT()
+  const jwtUserID = req.params.user_id;
+  const room_id = req.params.room_id;
   const historical = req.params.hist;
+  let from;
+  let to;
+
+  if (req.params.from === undefined || req.params.from === null) {
+    from = "0";
+  } else {
+    from = req.params.from;
+  }
+
+  if (req.params.to === undefined || req.params.to === null) {
+    to = "2147483647";
+  } else {
+    to = req.params.to;
+  }
+  console.log(from);
+  console.log(to);
+  let values;
   let sql;
-  if (historical === "true") {
+  if (historical === "true" && from) {
     sql = measureQuery;
+    values = [
+      room_id,
+      from,
+      to,
+      room_id,
+      from,
+      to,
+      room_id,
+      from,
+      to,
+      room_id,
+      from,
+      to,
+    ];
   } else {
     sql = measureQueryCurrent;
+    values = [room_id, room_id, room_id, room_id];
   }
+  console.log(values);
   try {
-    //This user id is passed to us by verifyJWT()
-    const jwtUserID = req.params.user_id;
-    const room_id = req.params.room_id;
-    const rows = await con.query(sql, [room_id, room_id, room_id, room_id]);
+    const rows = await con.query(sql, values);
     const tabularData: any = rows[0];
 
     if (tabularData.length === 0) {

@@ -30,16 +30,16 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     try {
       const decoded = jwt.verify(refreshToken, SECRET_KEY) as JwtPayload;
       const token = jwt.sign({ id: decoded.id }, SECRET_KEY, {
-        expiresIn: "1h",
+        expiresIn: 1800,
       });
-      const NewRefreshToken = jwt.sign({ id: decoded.id }, SECRET_KEY, {
-        expiresIn: "24h",
-      });
+      // const NewRefreshToken = jwt.sign({ id: decoded.id }, SECRET_KEY, {
+      //   expiresIn: "24h",
+      // });
       res
-        .cookie("x-refresh-token", NewRefreshToken, {
-          httpOnly: true,
-          sameSite: "strict",
-        })
+        // .cookie("x-refresh-token", NewRefreshToken, {
+        //   httpOnly: true,
+        //   sameSite: "strict",
+        // })
         .header("x-access-token", token)
         .send("Token Expired: New token returned in header");
     } catch (error) {
