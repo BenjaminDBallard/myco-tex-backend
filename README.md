@@ -46,7 +46,7 @@ Current work is focused on establishing a monitoring system and database for tem
 - [x] Add JWT and bcrypt to routers and controllers for authorization
 - [x] Add new table, routers, and controllers for ESP authorization
 - [x] Set up JWT token refresh
-- [ ] "From" and "To" time stamp sorting on measurements & probe_type enpoints
+- [x] "From" and "To" time stamp sorting on measurements & probe_type enpoints
 
 **Quality Assurance**
 
