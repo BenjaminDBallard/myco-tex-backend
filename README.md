@@ -116,10 +116,12 @@ Current work is focused on establishing a monitoring system and database for tem
 ## Measure:
 
 > :/hist = (true or false) determines whether you recieve the single current value or all historical values
+> /:from? = (unix timestamp) if historical is true determines the range from which you get measurements. (defaults to 0 = JAN 01 1970)
+> /:to? = (unix timestamp) if historical is true determines the range to which you get measurements (defaults to current time).
 
-| Request |           Endpoint            | Description                                                                     |
-| ------: | :---------------------------: | :------------------------------------------------------------------------------ |
-|     GET | `/api/measure/:room_id/:hist` | Returns a Json file showing all measurements from all controllers within a room |
+| Request |                 Endpoint                  | Description                                                                     |
+| ------: | :---------------------------------------: | :------------------------------------------------------------------------------ |
+|     GET | `/api/measure/:room_id/:hist/:from?/:to?` | Returns a Json file showing all measurements from all controllers within a room |
 
 <br/>
 <hr/>
@@ -285,20 +287,22 @@ Current work is focused on establishing a monitoring system and database for tem
 
 ## Measurements:
 
-> :/hist = (true or false) determines whether you recieve the single current value or all historical values
+> /:hist = (true or false) determines whether you recieve the single current value or all historical values
+> /:from? = (unix timestamp) if historical is true determines the range from which you get measurements. (defaults to 0 = JAN 01 1970)
+> /:to? = (unix timestamp) if historical is true determines the range to which you get measurements (defaults to current time).
 
 **Endpoints**
 
-| Request |          Endpoint           |                       Parameters                        | Description                                  |
-| ------: | :-------------------------: | :-----------------------------------------------------: | :------------------------------------------- |
-|     GET | `/api/co2/:probe_id/:hist`  |                           N/A                           | Get historical or current device measurement |
-|     GET | `/api/hum/:probe_id/:hist`  |                           N/A                           | Get historical or current device measurement |
-|     GET | `/api/ppm/:probe_id/:hist`  |                           N/A                           | Get historical or current device measurement |
-|     GET | `/api/temp/:probe_id/:hist` |                           N/A                           | Get historical or current device measurement |
-|    POST |  `/api/co2/new/:probe_id`   | controller_id <br/> device_pass <br/> probe_co2_measure | Post new co2 measurement                     |
-|    POST |  `/api/hum/new/:probe_id`   | controller_id <br/> device_pass <br/> probe_co2_measure | Post new humidity measurement                |
-|    POST |  `/api/ppm/new/:probe_id`   | controller_id <br/> device_pass <br/> probe_co2_measure | Post new ppm measurement                     |
-|    POST |  `/api/temp/new/:probe_id`  | controller_id <br/> device_pass <br/> probe_co2_measure | Post new temperature measurement             |
+| Request |                Endpoint                 |                       Parameters                        | Description                                  |
+| ------: | :-------------------------------------: | :-----------------------------------------------------: | :------------------------------------------- |
+|     GET | `/api/co2/:probe_id/:hist/:from?/:to?`  |                           N/A                           | Get historical or current device measurement |
+|     GET | `/api/hum/:probe_id/:hist/:from?/:to?`  |                           N/A                           | Get historical or current device measurement |
+|     GET | `/api/ppm/:probe_id/:hist/:from?/:to?`  |                           N/A                           | Get historical or current device measurement |
+|     GET | `/api/temp/:probe_id/:hist/:from?/:to?` |                           N/A                           | Get historical or current device measurement |
+|    POST |        `/api/co2/new/:probe_id`         | controller_id <br/> device_pass <br/> probe_co2_measure | Post new co2 measurement                     |
+|    POST |        `/api/hum/new/:probe_id`         | controller_id <br/> device_pass <br/> probe_co2_measure | Post new humidity measurement                |
+|    POST |        `/api/ppm/new/:probe_id`         | controller_id <br/> device_pass <br/> probe_co2_measure | Post new ppm measurement                     |
+|    POST |        `/api/temp/new/:probe_id`        | controller_id <br/> device_pass <br/> probe_co2_measure | Post new temperature measurement             |
 
 <br/>
 

@@ -95,8 +95,8 @@ export const logIn = async (req: Request, res: Response) => {
 
     //If secret SECRET_KEY does exist generate JWT
     const id: string = userArray[0][0].user_id;
-    const token = jwt.sign({ id }, SECRET_KEY, { expiresIn: "1h" });
-    const refreshToken = jwt.sign({ id }, SECRET_KEY, { expiresIn: "24h" });
+    const token = jwt.sign({ id }, SECRET_KEY, { expiresIn: 1800 });
+    const refreshToken = jwt.sign({ id }, SECRET_KEY, { expiresIn: "8h" });
 
     res.cookie("x-refresh-token", refreshToken, {
       httpOnly: true,
@@ -119,9 +119,9 @@ export const refreshJWT = async (req: Request, res: Response) => {
 
   try {
     const decoded = jwt.verify(refreshToken, SECRET_KEY) as JwtPayload;
-    const token = jwt.sign({ id: decoded.id }, SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign({ id: decoded.id }, SECRET_KEY, { expiresIn: 1800 });
     const NewRefreshToken = jwt.sign({ id: decoded.id }, SECRET_KEY, {
-      expiresIn: "24h",
+      expiresIn: "8h",
     });
 
     res
