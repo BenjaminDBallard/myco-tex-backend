@@ -40,6 +40,7 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
         //   httpOnly: true,
         //   sameSite: "strict",
         // })
+        .set("Access-Control-Expose-Headers", "x-access-token")
         .header("x-access-token", token)
         .send("Token Expired: New token returned in header");
     } catch (error) {

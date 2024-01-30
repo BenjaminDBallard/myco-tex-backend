@@ -102,7 +102,8 @@ export const logIn = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "strict",
     });
-    res.header("x-access-token", token).send("Logged in! user_id: " + id);
+    res.set("Access-Control-Expose-Headers", "x-access-token");
+    res.header("x-access-token", token).json("Logged in! user_id: " + id);
   } catch (err) {
     return res.status(500).send("Unable to log in");
   } finally {
@@ -129,6 +130,7 @@ export const refreshJWT = async (req: Request, res: Response) => {
         httpOnly: true,
         sameSite: "strict",
       })
+      .set("Access-Control-Expose-Headers", "x-access-token")
       .header("x-access-token", token)
       .send(decoded.id);
   } catch (error) {
