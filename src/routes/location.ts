@@ -1,15 +1,15 @@
-import { Router } from "express";
+import { Router } from 'express'
 import {
   // getLocation,
   logLocation,
-  updateLocation,
-} from "../controllers/location.js";
-import { verifyJWT } from "../middleware/verifyJwt.js";
+  updateLocation
+} from '../controllers/location'
+import { verifyJWT } from '../middleware/verifyJwt'
 
-const router = Router();
+const router = Router()
 
 // router.get("/", verifyJWT, getLocation);
-router.post("/new", verifyJWT, logLocation);
-router.put("/update/:location_id", verifyJWT, updateLocation);
+router.post('/new', verifyJWT, logLocation)
+router.put('/update/:location_id', verifyJWT, updateLocation)
 
-export default router;
+export default router

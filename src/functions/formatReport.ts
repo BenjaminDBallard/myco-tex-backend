@@ -1,53 +1,55 @@
+/* eslint-disable camelcase */
+/* eslint-disable no-use-before-define */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const formatReport = (tabData: any) => {
-  const formatedData: UserReport[] = convertReportToTreeArray(tabData);
-  return formatedData;
-};
+  const formatedData: UserReport[] = convertReportToTreeArray(tabData)
+  return formatedData
+}
 
 interface ProbeReport {
-  probe_id: string;
-  probe_make: string;
-  probe_model: string;
-  probe_type: string;
-  probe_created_at: string;
+  probe_id: string
+  probe_make: string
+  probe_model: string
+  probe_type: string
+  probe_created_at: string
 }
 
 interface ControllerReport {
-  controller_id: string;
-  controller_name: string;
-  controller_serial: string;
-  controller_make: string;
-  controller_model: string;
-  controller_created_at: string;
-  probes: ProbeReport[];
+  controller_id: string
+  controller_name: string
+  controller_serial: string
+  controller_make: string
+  controller_model: string
+  controller_created_at: string
+  probes: ProbeReport[]
 }
 
 interface RoomReport {
-  room_id: string;
-  room_title: string;
-  room_created_at: string;
-  controllers: ControllerReport[];
+  room_id: string
+  room_title: string
+  room_created_at: string
+  controllers: ControllerReport[]
 }
 
 interface LocationReport {
-  location_id: string;
-  location_title: string;
-  location_created_at: string;
-  rooms: RoomReport[];
+  location_id: string
+  location_title: string
+  location_created_at: string
+  rooms: RoomReport[]
 }
 
 interface UserReport {
-  user_id: string;
-  user_email: string;
-  user_pass: string;
-  user_company_name: string;
-  user_created_at: string;
-  locations: LocationReport[];
+  user_id: string
+  user_email: string
+  user_pass: string
+  user_company_name: string
+  user_created_at: string
+  locations: LocationReport[]
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, space-before-function-paren
 function convertReportToTreeArray(data: any[]): UserReport[] {
-  const tree: UserReport[] = [];
+  const tree: UserReport[] = []
 
   data.forEach((item) => {
     const {
@@ -72,10 +74,10 @@ function convertReportToTreeArray(data: any[]): UserReport[] {
       probe_make,
       probe_model,
       probe_type,
-      probe_created_at,
-    } = item;
+      probe_created_at
+    } = item
 
-    let userNode = tree.find((node) => node.user_id === user_id);
+    let userNode = tree.find((node) => node.user_id === user_id)
 
     if (!userNode) {
       userNode = {
@@ -84,44 +86,40 @@ function convertReportToTreeArray(data: any[]): UserReport[] {
         user_pass,
         user_company_name,
         user_created_at,
-        locations: [],
-      };
-      tree.push(userNode);
+        locations: []
+      }
+      tree.push(userNode)
     }
 
-    let locationNode = userNode.locations.find(
-      (node) => node.location_id === location_id
-    );
+    let locationNode = userNode.locations.find((node) => node.location_id === location_id)
 
     if (!locationNode) {
       locationNode = {
         location_id,
         location_title,
         location_created_at,
-        rooms: [],
-      };
+        rooms: []
+      }
       if (location_id !== null) {
-        userNode.locations.push(locationNode);
+        userNode.locations.push(locationNode)
       }
     }
 
-    let roomNode = locationNode.rooms.find((node) => node.room_id === room_id);
+    let roomNode = locationNode.rooms.find((node) => node.room_id === room_id)
 
     if (!roomNode) {
       roomNode = {
         room_id,
         room_title,
         room_created_at,
-        controllers: [],
-      };
+        controllers: []
+      }
       if (room_id !== null) {
-        locationNode.rooms.push(roomNode);
+        locationNode.rooms.push(roomNode)
       }
     }
 
-    let controllerNode = roomNode.controllers.find(
-      (node) => node.controller_id === controller_id
-    );
+    let controllerNode = roomNode.controllers.find((node) => node.controller_id === controller_id)
 
     if (!controllerNode) {
       controllerNode = {
@@ -131,10 +129,10 @@ function convertReportToTreeArray(data: any[]): UserReport[] {
         controller_make,
         controller_model,
         controller_created_at,
-        probes: [],
-      };
+        probes: []
+      }
       if (controller_id !== null) {
-        roomNode.controllers.push(controllerNode);
+        roomNode.controllers.push(controllerNode)
       }
     }
 
@@ -144,10 +142,10 @@ function convertReportToTreeArray(data: any[]): UserReport[] {
         probe_make,
         probe_model,
         probe_type,
-        probe_created_at,
-      });
+        probe_created_at
+      })
     }
-  });
+  })
 
-  return tree;
+  return tree
 }
