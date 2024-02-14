@@ -1,19 +1,33 @@
 /* eslint-disable object-shorthand */
 import mysql from 'mysql2/promise'
 
-const host = process.env.HOST
-const dbUserName = process.env.DBUSERNAME
-const password = process.env.PASSWORD
-const database = process.env.DATABASE
-const dbport = Number(process.env.DBPORT)
+let host
+let userName
+let password
+let database
+let port
+
+if (process.env.NODE_ENV === 'production') {
+  host = process.env.PROD_HOST
+  userName = process.env.PROD_DBUSERNAME
+  password = process.env.PROD_PASSWORD
+  database = process.env.PROD_DATABASE
+  port = Number(process.env.PROD_DBPORT)
+} else {
+  host = process.env.HOST
+  userName = process.env.DBUSERNAME
+  password = process.env.PASSWORD
+  database = process.env.DATABASE
+  port = Number(process.env.DBPORT)
+}
 
 console.log('[MySQL] Connecting...')
 
 const pool = mysql.createPool({
   connectionLimit: 100,
   host: host,
-  port: dbport,
-  user: dbUserName,
+  port: port,
+  user: userName,
   password: password,
   database: database,
   multipleStatements: true
@@ -21,9 +35,9 @@ const pool = mysql.createPool({
 
 // const con = await pool.getConnection();
 
-console.log(`[MySQL] Connection to ${database} established.`)
+console.log(`[MySQL] Connection to ${database} on ${process.env.NODE_ENV} established.`)
 
-console.log('[MySQL] Initializing database...')
+// console.log('[MySQL] Initializing database...')
 
 // async function initializeDatabase() {
 //   // If you need to drop tables to start fresh, uncomment this code:

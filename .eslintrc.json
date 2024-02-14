@@ -1,6 +1,6 @@
 {
   "env": {
-    "es2021": true,
+    "es2022": true,
     "node": true
   },
   "extends": ["standard"],
@@ -9,6 +9,6 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "prettier"],
   "rules": {}
 }

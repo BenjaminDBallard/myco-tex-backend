@@ -1,17 +1,16 @@
 {
   "name": "myco-tex-backend",
-  "type": "module",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "webpack --watch --env mode=development --config webpack.config.ts",
-    "clean:dev": "rimraf build",
-    "clean:prod": "rimraf dist",
-    "build": "webpack --mode production --config webpack.config.ts",
-    "dev": "nodemon build/index.js --watch build",
-    "prod": "nodemon dist/index.js --watch dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "NODE_ENV=development webpack --config webpack.dev.js",
+    "build": "NODE_ENV=production webpack --config webpack.prod.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean:dev": "rimraf build-dev",
+    "clean:prod": "rimraf build-prod",
+    "run:dev": "NODE_ENV=development nodemon build-dev/index.js",
+    "run:prod": "NODE_ENV=production nodemon build-prod/index.js"
   },
   "author": "",
   "license": "ISC",

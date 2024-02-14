@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2022" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-    "module": "CommonJS" /* Specify what module code is generated. */,
-    "sourceMap": true /* Specify the root folder within your source files. */,
+    "target": "es2022",
+    "module": "commonjs",
+    "sourceMap": true,
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -12,8 +12,9 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "outDir": "./dist"
   },
-  "include": ["src/**/*.ts", "src/index.ts"],
-  "exclude": ["node_modules", "src/**/*.spec.ts", "src/**/__tests__/*.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
