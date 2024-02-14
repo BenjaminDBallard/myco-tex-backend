@@ -3,7 +3,6 @@ const nodeExternals = require('webpack-node-externals')
 const WebpackShellPluginNext = require('webpack-shell-plugin-next')
 
 const { NODE_ENV = 'development' } = process.env
-console.log(process.env.DATABASE)
 
 module.exports = {
   entry: './src/index.ts',
@@ -14,7 +13,7 @@ module.exports = {
   plugins: [
     new WebpackShellPluginNext({
       onBuildStart: {
-        scripts: ['npm run clean:dev && npm run clean:prod'],
+        scripts: ['npm run clean:dev'],
         blocking: true,
         parallel: false
       },
