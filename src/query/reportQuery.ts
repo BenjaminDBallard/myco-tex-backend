@@ -30,4 +30,4 @@ LEFT JOIN controller
   ON room.room_id = controller.room_id
 LEFT JOIN probe
   ON controller.controller_id = probe.controller_id
-WHERE users.user_id = ? ORDER BY user_company_name, location_title, room_title, controller_created_at, probe_created_at DESC;`;
+WHERE users.user_id = ? ORDER BY user_company_name, location_title, room_title, controller_created_at, probe_created_at DESC;`

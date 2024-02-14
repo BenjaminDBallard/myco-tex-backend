@@ -3,8 +3,8 @@
 //   getController,
 //   logController,
 //   updateController,
-// } from "../controllers/controller.js";
-// import { verifyJWT } from "../middleware/verifyJwt.js";
+// } from "../controllers/controller";
+// import { verifyJWT } from "../middleware/verifyJwt";
 
 // const router = Router();
 

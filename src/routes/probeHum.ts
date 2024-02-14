@@ -1,10 +1,10 @@
-import { Router } from "express";
-import { getProbeHum, logProbeHum } from "../controllers/probeHum.js";
-import { verifyJWT } from "../middleware/verifyJwt.js";
+import { Router } from 'express'
+import { getProbeHum, logProbeHum } from '../controllers/probeHum'
+import { verifyJWT } from '../middleware/verifyJwt'
 
-const router = Router();
+const router = Router()
 
-router.get("/:probe_id/:hist/:from?/:to?", verifyJWT, getProbeHum);
-router.post("/new/:probe_id", logProbeHum);
+router.get('/:probe_id/:hist/:from?/:to?', verifyJWT, getProbeHum)
+router.post('/new/:probe_id', logProbeHum)
 
-export default router;
+export default router

@@ -1,13 +1,13 @@
-// import pool from "../connection.js";
+// import pool from "../connection";
 // import { Request, Response } from "express";
 // const con = await pool.getConnection();
 
 // export const updateProbe = async (req: Request, res: Response) => {
 //   try {
-//     //This user id is passed to us by verifyJWT()
+//     // This user id is passed to us by verifyJWT()
 //     const jwtUserID = req.params.user_id;
 //     console.log(1);
-//     //verify SQL user_id
+//     // verify SQL user_id
 //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 //     const sqlUserIDCheck: any = await con.execute(
 //       `SELECT users.user_id, probe.probe_id
@@ -82,9 +82,9 @@
 //       ON users.user_id = location.user_id
 //     LEFT JOIN room
 //       ON location.location_id = room.location_id
-// 	  LEFT JOIN controller
+//    LEFT JOIN controller
 //       ON room.room_id = controller.room_id
-// 	  LEFT JOIN probe
+//    LEFT JOIN probe
 //       ON controller.controller_id = probe.controller_id
 //     WHERE controller.controller_id = ?`;
 //     const controller_id = req.params.controller_id;
