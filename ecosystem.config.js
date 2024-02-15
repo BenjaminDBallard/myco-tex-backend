@@ -11,7 +11,7 @@ module.exports = {
       user: 'benb',
       host: '159.203.123.45',
       ref: 'origin/master',
-      repo: 'git@github.com:BenjaminDBallard/myco-tex-backend.git',
+      repo: 'https://github.com/BenjaminDBallard/myco-tex-backend.git',
       path: '/home/benb/mycotex-prod',
       'pre-setup': 'apt-get install git ; ls -la',
       'post-setup': 'ls -la',
