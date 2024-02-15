@@ -8,9 +8,9 @@
     "build": "NODE_ENV=production webpack --config webpack.prod.js",
     "lint": "eslint . --ext .ts",
     "clean:dev": "rimraf build-dev",
-    "clean:prod": "rimraf build-prod",
+    "clean:prod": "rimraf dist",
     "run:dev": "NODE_ENV=development nodemon build-dev/index.js",
-    "run:prod": "NODE_ENV=production nodemon build-prod/index.js"
+    "run:prod": "NODE_ENV=production nodemon dist/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -19,9 +19,11 @@
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.7.0",
+    "pm2": "^5.3.1",
     "uniqid": "^5.4.0"
   },
   "devDependencies": {
@@ -41,7 +43,6 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "babel-loader": "^9.1.3",
-    "dotenv": "^16.4.3",
     "eslint": "^8.56.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",

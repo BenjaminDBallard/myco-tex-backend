@@ -4,50 +4,49 @@ const WebpackShellPluginNext = require('webpack-shell-plugin-next')
 const TerserPlugin = require('terser-webpack-plugin')
 
 const { NODE_ENV = 'production' } = process.env
-console.log(process.env.DATABASE)
 
 module.exports = {
   entry: './src/index.ts',
   mode: NODE_ENV,
   externalsPresets: { node: true },
   externals: [nodeExternals()],
-  watch: NODE_ENV === 'development',
-  plugins: [
-    new WebpackShellPluginNext({
-      onBuildStart: {
-        scripts: ['npm run clean:prod'],
-        blocking: true,
-        parallel: false
-      }
-    })
-  ],
+  // watch: NODE_ENV === 'production',
+  // plugins: [
+  //   new WebpackShellPluginNext({
+  //     onBuildStart: {
+  //       scripts: ['npm run clean:prod'],
+  //       blocking: true,
+  //       parallel: false
+  //     }
+  //   })
+  // ],
   output: {
-    path: path.resolve(__dirname, 'build-prod'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'index.js'
   },
   optimization: {
-    minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          compress: {
-            drop_console: true
-          }
-        }
-      })
-    ]
+    minimize: true
+    // minimizer: [
+    //   new TerserPlugin({
+    //     terserOptions: {
+    //       compress: {
+    //         drop_console: true
+    //       }
+    //     }
+    //   })
+    // ]
   },
   module: {
     rules: [
       {
-        test: /\.(ts|js)$/,
+        test: /\.(ts|js|cjs)$/,
         loader: 'ts-loader',
-        options: {},
-        exclude: /node_modules/
+        options: {}
+        // exclude: /node_modules/
       }
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js', '.cjs']
   }
 }
