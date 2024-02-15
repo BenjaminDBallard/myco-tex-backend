@@ -6,6 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=development webpack --config webpack.dev.js",
     "build": "NODE_ENV=production webpack --config webpack.prod.js",
+    "deploy": "pm2 deploy ecosystem.config.js production",
     "lint": "eslint . --ext .ts",
     "clean:dev": "rimraf build-dev",
     "clean:prod": "rimraf dist",
