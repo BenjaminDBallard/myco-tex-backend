@@ -13,9 +13,10 @@ module.exports = {
       ref: 'origin/master',
       repo: 'git@github.com:BenjaminDBallard/myco-tex-backend.git',
       path: '/home/benb/mycotex-prod',
+      'pre-setup': 'apt-get install git ; ls -la',
+      'post-setup': 'ls -la',
       'pre-deploy-local': '',
-      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
-      'pre-setup': ''
+      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production'
     }
   }
 }
