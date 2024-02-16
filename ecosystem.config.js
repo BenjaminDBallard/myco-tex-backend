@@ -13,6 +13,10 @@ module.exports = {
       ref: 'origin/main',
       repo: 'https://github.com/BenjaminDBallard/myco-tex-backend.git',
       path: '/home/benb/mycotex-prod',
+      node_args: '--experimental-specifier-resolution=node',
+      env: {
+        NODE_ENV: 'production'
+      },
       'pre-setup': 'apt-get install git ; ls -la',
       'post-setup': 'ls -la',
       'pre-deploy-local': '',
