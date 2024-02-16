@@ -17,7 +17,13 @@ import cookies from "cookie-parser";
 
 const app = express();
 
-app.use(cors());
+const whitelist = ["http://localhost:3000", "http://localhost:3001"];
+const corsOptions = {
+  credentials: true, // This is important.
+  origin: whitelist,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookies());
 

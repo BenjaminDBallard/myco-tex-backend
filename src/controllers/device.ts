@@ -7,6 +7,7 @@ const con = await pool.getConnection();
 
 export const postDevice = async (req: Request, res: Response) => {
   //Determine if user already exists
+  console.log(req.params, req.body);
   if (
     !req.params.room_id ||
     !req.body.controller_id ||

@@ -95,7 +95,7 @@ export const logIn = async (req: Request, res: Response) => {
 
     //If secret SECRET_KEY does exist generate JWT
     const id: string = userArray[0][0].user_id;
-    const token = jwt.sign({ id }, SECRET_KEY, { expiresIn: 1800 });
+    const token = jwt.sign({ id }, SECRET_KEY, { expiresIn: 20 });
     const refreshToken = jwt.sign({ id }, SECRET_KEY, { expiresIn: "8h" });
 
     res.cookie("x-refresh-token", refreshToken, {
@@ -103,7 +103,7 @@ export const logIn = async (req: Request, res: Response) => {
       sameSite: "strict",
     });
     res.set("Access-Control-Expose-Headers", "x-access-token");
-    res.header("x-access-token", token).json("Logged in! user_id: " + id);
+    res.header("x-access-token", token).json({ user_id: id });
   } catch (err) {
     return res.status(500).send("Unable to log in");
   } finally {
