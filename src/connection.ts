@@ -7,6 +7,8 @@ let password
 let database
 let port
 
+console.log(process.env.NODE_ENV)
+
 if (process.env.NODE_ENV === 'production') {
   host = process.env.PROD_HOST
   userName = process.env.PROD_DBUSERNAME
