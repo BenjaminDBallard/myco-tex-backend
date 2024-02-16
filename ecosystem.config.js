@@ -20,7 +20,8 @@ module.exports = {
       'pre-setup': 'apt-get install git ; ls -la',
       'post-setup': 'ls -la',
       'pre-deploy-local': '',
-      'post-deploy': 'npm install && npm run build && pm2 startOrRestart ecosystem.config.js --env production'
+      'post-deploy':
+        'npm install --production=false && npm run build && pm2 startOrRestart ecosystem.config.js --env production'
     }
   }
 }
