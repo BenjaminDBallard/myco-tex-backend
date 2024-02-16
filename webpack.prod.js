@@ -10,39 +10,29 @@ module.exports = {
   mode: NODE_ENV,
   externalsPresets: { node: true },
   externals: [nodeExternals()],
-  // watch: NODE_ENV === 'production',
-  // plugins: [
-  //   new WebpackShellPluginNext({
-  //     onBuildStart: {
-  //       scripts: ['npm run clean:prod'],
-  //       blocking: true,
-  //       parallel: false
-  //     }
-  //   })
-  // ],
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.js'
   },
   optimization: {
-    minimize: true
-    // minimizer: [
-    //   new TerserPlugin({
-    //     terserOptions: {
-    //       compress: {
-    //         drop_console: true
-    //       }
-    //     }
-    //   })
-    // ]
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true
+          }
+        }
+      })
+    ]
   },
   module: {
     rules: [
       {
         test: /\.(ts|js|cjs)$/,
         loader: 'ts-loader',
-        options: {}
-        // exclude: /node_modules/
+        options: {},
+        exclude: /node_modules/
       }
     ]
   },
