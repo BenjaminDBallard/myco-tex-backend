@@ -1,6 +1,6 @@
 // import { Router } from "express";
-// import { getProbe, logProbe, updateProbe } from "../controllers/probe.js";
-// import { verifyJWT } from "../middleware/verifyJwt.js";
+// import { getProbe, logProbe, updateProbe } from "../controllers/probe";
+// import { verifyJWT } from "../middleware/verifyJwt";
 
 // const router = Router();
 

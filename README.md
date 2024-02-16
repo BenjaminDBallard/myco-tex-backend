@@ -47,6 +47,7 @@ Current work is focused on establishing a monitoring system and database for tem
 - [x] Add new table, routers, and controllers for ESP authorization
 - [x] Set up JWT token refresh
 - [x] "From" and "To" time stamp sorting on measurements & probe_type enpoints
+- [x] set up webpack
 
 **Quality Assurance**
 
@@ -81,16 +82,16 @@ Current work is focused on establishing a monitoring system and database for tem
 >
 > Your testing requests will require a header with a key of "x-access token" and the token value returned from the post user endpoint
 >
-> ### Compiles typescript, Initializes DB, & Starts local server
+> ### Compiles dev enviroment & Starts local server
 >
 > ```
 > npm run start
 > ```
 >
-> ### Run your tests
+> ### Compiles prod enviroment
 >
 > ```
-> npm run test
+> npm run build
 > ```
 >
 > ### Lints and fixes files

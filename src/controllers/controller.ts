@@ -1,4 +1,4 @@
-// import pool from "../connection.js";
+// import pool from "../connection";
 // import { Request, Response } from "express";
 // const con = await pool.getConnection();
 
