@@ -17,15 +17,15 @@ import cookies from 'cookie-parser'
 
 const app = express()
 
-const whitelist = ["http://localhost:3000", "http://localhost:3001"];
+const whitelist = ['http://localhost:3000', 'http://localhost:3001', 'https://mycology.perenne.com/']
 const corsOptions = {
   credentials: true, // This is important.
-  origin: whitelist,
-};
+  origin: whitelist
+}
 
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(cookies());
+app.use(cors(corsOptions))
+app.use(express.json())
+app.use(cookies())
 
 app.get('/isUserAuth', verifyJWT, (req, res) => {
   res.send('You are authenticated Congrats:')
