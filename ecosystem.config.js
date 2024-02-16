@@ -21,7 +21,7 @@ module.exports = {
       'post-setup': 'ls -la',
       'pre-deploy-local': '',
       'post-deploy':
-        'npm install --production=false && npm run build  && pm2 reload ecosystem.config.js --env production'
+        'npm install --production=false && npm run build  && pm2 startOrRestart ecosystem.config.js --env production'
     }
   }
 }
