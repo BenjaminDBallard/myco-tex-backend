@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'mycotex',
-      script: 'dist/index.js'
+      script: 'mycotex-prod/current/dist/index.js'
     }
   ],
 
