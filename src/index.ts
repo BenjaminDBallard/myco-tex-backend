@@ -17,7 +17,12 @@ import cookies from 'cookie-parser'
 
 const app = express()
 
-const whitelist = ['http://localhost:3000', 'http://localhost:3001', 'https://mycology.perenne.com/']
+const whitelist = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://mycology.perenne.com/',
+  'https://myco-tex.web.app/'
+]
 const corsOptions = {
   credentials: true, // This is important.
   origin: whitelist
