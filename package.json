@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "NODE_ENV=development webpack --config webpack.dev.js",
+    "start": "NODE_ENV=development webpack --config webpack.dev.js",
     "build": "NODE_ENV=production webpack --config webpack.prod.js",
     "server:deploy": "pm2 deploy ecosystem.config.js production",
     "server:status": "ssh benb@159.203.123.45 pm2 ls",
