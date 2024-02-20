@@ -33,10 +33,10 @@ export const getMeasure = async (req: Request, res: Response) => {
   let sql
   if (historical === 'true' && from) {
     sql = measureQuery
-    values = [room_id, from, to, room_id, from, to, room_id, from, to, room_id, from, to]
+    values = [room_id, from, to, from, to, from, to, from, to]
   } else {
     sql = measureQueryCurrent
-    values = [room_id, room_id, room_id, room_id]
+    values = [room_id]
   }
   try {
     const rows = await con.query(sql, values)
