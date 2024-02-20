@@ -48,6 +48,10 @@ Current work is focused on establishing a monitoring system and database for tem
 - [x] Set up JWT token refresh
 - [x] "From" and "To" time stamp sorting on measurements & probe_type enpoints
 - [x] set up webpack
+- [x] set up pm2 deployment
+- [x] set up domain and cloudflare
+- [x] DEPLOY to Digital Ocean droplets
+
 
 **Quality Assurance**
 
@@ -57,7 +61,10 @@ Current work is focused on establishing a monitoring system and database for tem
 
 **Final**
 
-- [ ] DEPLOY to Digital Ocean droplets
+- [ ] readme update deployment
+- [ ] readme update digital ocean
+- [ ] readme update cloudflare
+- [ ] update cloudflare daemon
 
 <br/>
 <hr/>
