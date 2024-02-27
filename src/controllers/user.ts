@@ -90,16 +90,16 @@ export const logIn = async (req: Request, res: Response) => {
     if (!SECRET_KEY) return res.status(500).send('Access token not found')
 
     //If secret SECRET_KEY does exist generate JWT
-    const id: string = userArray[0][0].user_id;
-    const token = jwt.sign({ id }, SECRET_KEY, { expiresIn: 20 });
-    const refreshToken = jwt.sign({ id }, SECRET_KEY, { expiresIn: "8h" });
+    const id: string = userArray[0][0].user_id
+    const token = jwt.sign({ id }, SECRET_KEY, { expiresIn: '1h' })
+    const refreshToken = jwt.sign({ id }, SECRET_KEY, { expiresIn: '8h' })
 
     res.cookie('x-refresh-token', refreshToken, {
       httpOnly: true,
-      sameSite: "strict",
-    });
-    res.set("Access-Control-Expose-Headers", "x-access-token");
-    res.header("x-access-token", token).json({ user_id: id });
+      sameSite: 'strict'
+    })
+    res.set('Access-Control-Expose-Headers', 'x-access-token')
+    res.header('x-access-token', token).json({ user_id: id })
   } catch (err) {
     return res.status(500).send('Unable to log in')
   } finally {
@@ -116,7 +116,7 @@ export const refreshJWT = async (req: Request, res: Response) => {
 
   try {
     const decoded = jwt.verify(refreshToken, SECRET_KEY) as JwtPayload
-    const token = jwt.sign({ id: decoded.id }, SECRET_KEY, { expiresIn: 1800 })
+    const token = jwt.sign({ id: decoded.id }, SECRET_KEY, { expiresIn: '1h' })
     const NewRefreshToken = jwt.sign({ id: decoded.id }, SECRET_KEY, {
       expiresIn: '8h'
     })
